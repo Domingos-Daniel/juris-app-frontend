@@ -5,6 +5,7 @@ import { StreamingLoader } from '../../shared/ui/StreamingLoader'
 import { EmptyState } from '../../shared/ui/EmptyState'
 import { ChatMessage } from '../../shared/ui/ChatMessage'
 import { ChatComposer } from '../../shared/ui/ChatComposer'
+import { InfoTooltip } from '../../shared/ui/InfoTooltip'
 import { formatNow } from '../../shared/utils/format'
 import { sendChatQuestionStream, uploadPdfDocument, preflightChatQuestion } from '../../shared/services/apiClient'
 
@@ -12,6 +13,7 @@ const MAX_PDF_BYTES = 1024 * 1024
 
 export function ChatWorkspace({
   selectedConversation,
+  draftActiveDocumentId,
   documents,
   provider,
   onAppendMessagePair,
@@ -40,9 +42,10 @@ export function ChatWorkspace({
   const fileInputRef = useRef(null)
   const activeStreamRef = useRef(null)
 
+  const activeDocumentIdForDisplay = selectedConversation?.activeDocumentId || draftActiveDocumentId || null
   const activeDocument = useMemo(
-    () => documents.find((document) => document.id === selectedConversation?.activeDocumentId) || null,
-    [documents, selectedConversation?.activeDocumentId],
+    () => documents.find((document) => document.id === activeDocumentIdForDisplay) || null,
+    [documents, activeDocumentIdForDisplay],
   )
 
   const scrollToBottom = (smooth = true) => {
@@ -188,7 +191,7 @@ export function ChatWorkspace({
         setPendingAttachment(null)
       }
 
-      const activeDocumentId = uploadedDocument?.id || selectedConversation?.activeDocumentId || null
+      const activeDocumentId = uploadedDocument?.id || selectedConversation?.activeDocumentId || draftActiveDocumentId || null
 
       // Preflight: detect vague queries before committing to expensive RAG pipeline
       setStreamingPhase('classifying')
@@ -407,7 +410,7 @@ export function ChatWorkspace({
             onClearPendingAttachment={() => setPendingAttachment(null)}
           />
           <p className="mt-2 text-center text-[10px] leading-relaxed text-[color:var(--ink-soft)]/70">
-            O jURIS-APP pode cometer erros. Considere verificar informações importantes e não substitui aconselhamento jurídico profissional.
+            O jURIS-APP pode cometer erros. Não substitui aconselhamento jurídico profissional. <InfoTooltip content="Este assistente utiliza inteligencia artificial para pesquisar legislacao angolana. As respostas sao geradas com base no corpus de diplomas indexados e devem ser verificadas por um profissional." />
           </p>
           <input ref={fileInputRef} type="file" accept="application/pdf,.pdf" className="hidden" onChange={handlePdfSelection} />
         </div>

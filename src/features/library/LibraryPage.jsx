@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { SurfaceCard } from '../../shared/ui/SurfaceCard'
+import { InfoTooltip } from '../../shared/ui/InfoTooltip'
 import { fetchCatalog } from '../../shared/services/apiClient'
 import { useAuth } from '../../shared/hooks/useAuth'
 import { CheckCircle, Clock, BookOpen } from 'lucide-react'
@@ -33,7 +34,10 @@ export function LibraryPage() {
     <section className="fade-rise space-y-5 py-2">
       {/* Header */}
       <div>
-        <h2 className="font-[family-name:var(--font-serif)] text-2xl font-semibold text-[color:var(--ink)] sm:text-3xl">Biblioteca Juridica</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="font-[family-name:var(--font-serif)] text-2xl font-semibold text-[color:var(--ink)] sm:text-3xl">Biblioteca Juridica</h2>
+          <InfoTooltip content="Lista de diplomas legislativos angolanos indexados no sistema. Os diplomas validados estao disponiveis para pesquisa no chat. Os pendentes aguardam processamento." />
+        </div>
         <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-[color:var(--ink-soft)]">
           Diplomas indexados, validados e utilizados pelo assistente nas respostas fundamentadas.
         </p>
@@ -74,7 +78,7 @@ export function LibraryPage() {
       {isLoading ? (
         <div className="flex items-center justify-center py-12 text-sm text-[color:var(--ink-soft)]">
           <span className="mr-2 h-4 w-4 rounded-full border-2 border-[color:var(--accent)] border-t-transparent animate-spin" />
-          Carregando biblioteca...
+          A carregar biblioteca...
         </div>
       ) : null}
       {error ? <div className="rounded-[var(--radius-md)] border border-red-200 bg-[color:var(--danger-soft)] px-4 py-3 text-sm text-red-700">{error}</div> : null}

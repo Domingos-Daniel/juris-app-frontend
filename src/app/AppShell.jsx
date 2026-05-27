@@ -216,6 +216,7 @@ export function AppShell({
               <div className="flex-1 min-h-0">
                 <ChatWorkspace
                   selectedConversation={selectedConversation}
+                  draftActiveDocumentId={state.draftActiveDocumentId}
                   documents={state.documents || []}
                   provider={selectedMotor.provider}
                   onAppendMessagePair={appendMessagePair}

@@ -7,8 +7,8 @@ export const STORAGE_KEYS = {
 export const NAV_ITEMS = [
   { id: 'chat', label: 'Nova Consulta' },
   { id: 'documents', label: 'Meus Documentos' },
-  { id: 'library', label: 'Biblioteca Juridica' },
-  { id: 'settings', label: 'Definicoes' },
+  { id: 'library', label: 'Biblioteca Jurídica' },
+  { id: 'settings', label: 'Definições' },
 ]
 
 export const MOTORS = [

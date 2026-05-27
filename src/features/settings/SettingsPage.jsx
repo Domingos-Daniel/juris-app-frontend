@@ -1,13 +1,17 @@
 import { API_BASE_URL } from '../../shared/constants/app'
 import { SurfaceCard } from '../../shared/ui/SurfaceCard'
+import { InfoTooltip } from '../../shared/ui/InfoTooltip'
 import { MoonStar, SunMedium, BrainCircuit, Server } from 'lucide-react'
 
 export function SettingsPage({ theme, toggleTheme, motor, onMotorChange }) {
   return (
     <section className="fade-rise space-y-5 py-2">
       <div>
-        <h2 className="font-[family-name:var(--font-serif)] text-2xl font-semibold text-[color:var(--ink)] sm:text-3xl">Definicoes</h2>
-        <p className="mt-1.5 text-sm text-[color:var(--ink-soft)]">Personaliza o comportamento da interface e da integracao com o backend.</p>
+        <div className="flex items-center gap-2">
+          <h2 className="font-[family-name:var(--font-serif)] text-2xl font-semibold text-[color:var(--ink)] sm:text-3xl">Definições</h2>
+          <InfoTooltip content="Configure o tema visual, o modelo de IA e visualize informacoes sobre o backend. As alteracoes sao guardadas automaticamente." />
+        </div>
+        <p className="mt-1.5 text-sm text-[color:var(--ink-soft)]">Personaliza o comportamento da interface e da integração com o backend.</p>
       </div>
 
       {/* Theme */}

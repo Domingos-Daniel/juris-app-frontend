@@ -168,7 +168,7 @@ export function App() {
       <div data-theme={theme} className="flex min-h-[100dvh] items-center justify-center bg-[color:var(--bg)] text-[color:var(--ink-soft)]">
         <div className="flex items-center gap-3">
           <span className="h-5 w-5 rounded-full border-2 border-[color:var(--accent)] border-t-transparent animate-spin" />
-          <span className="text-sm">A carregar sessao...</span>
+          <span className="text-sm">A carregar sessão...</span>
         </div>
       </div>
     )

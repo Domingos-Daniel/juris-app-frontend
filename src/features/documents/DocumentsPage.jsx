@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import {
+  AlertTriangle,
   Eye,
-  FilePlus2,
   FileText,
   Pencil,
   RefreshCw,
@@ -24,6 +24,7 @@ import { ActionButton } from '../../shared/ui/ActionButton'
 import { LoadingState } from '../../shared/ui/LoadingState'
 import { ErrorBanner } from '../../shared/ui/ErrorBanner'
 import { SurfaceCard } from '../../shared/ui/SurfaceCard'
+import { InfoTooltip } from '../../shared/ui/InfoTooltip'
 import { formatHumanTimestamp } from '../../shared/utils/format'
 
 const MAX_PDF_BYTES = 1024 * 1024
@@ -61,6 +62,7 @@ export function DocumentsPage({
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [preview, setPreview] = useState(null)
   const [busyId, setBusyId] = useState('')
+  const [ocrModal, setOcrModal] = useState(null)
   const fileInputRef = useRef(null)
   const previewRef = useRef(null)
 
@@ -86,10 +88,10 @@ export function DocumentsPage({
     try {
       const result = await triggerIngestion(authToken)
       setState('success')
-      setMessage(`Ingestao concluida com ${result.total_chunks} chunks em ${result.processed_files.length} ficheiros.`)
+      setMessage(`Ingestão concluida com ${result.total_chunks} chunks em ${result.processed_files.length} ficheiros.`)
     } catch (error) {
       setState('error')
-      setMessage(error.message || 'Erro na ingestao dos documentos.')
+      setMessage(error.message || 'Erro na ingestão dos documentos.')
     }
   }
 
@@ -114,8 +116,12 @@ export function DocumentsPage({
       const uploaded = await uploadPdfDocument(file, authToken)
       onAddUploadedDocument?.(uploaded)
       try { await onRefreshDocuments?.() } catch { /* keep optimistic */ }
-      setState('success')
-      setMessage(`${uploaded.filename} processado com ${uploaded.chunks_created} chunks.`)
+      if (uploaded.extraction_mode === 'ocr') {
+        setOcrModal(uploaded)
+      } else {
+        setState('success')
+        setMessage(`${uploaded.filename} processado com ${uploaded.chunks_created} chunks.`)
+      }
     } catch (error) {
       setState('error')
       setMessage(error.message || 'Falha ao processar o PDF.')
@@ -195,8 +201,11 @@ export function DocumentsPage({
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="font-[family-name:var(--font-serif)] text-2xl font-semibold text-[color:var(--ink)] sm:text-3xl">Meus Documentos</h2>
-          <p className="mt-1.5 text-sm text-[color:var(--ink-soft)]">Upload, organizacao e ativacao de contexto no chat.</p>
+          <div className="flex items-center gap-2">
+            <h2 className="font-[family-name:var(--font-serif)] text-2xl font-semibold text-[color:var(--ink)] sm:text-3xl">Meus Documentos</h2>
+            <InfoTooltip content="Carregue os seus PDFs pessoais (contratos, procuracoes, peticoes) para que o assistente juridico os analise. Cada PDF e indexado com inteligencia artificial para pesquisa contextual no chat." />
+          </div>
+          <p className="mt-1.5 text-sm text-[color:var(--ink-soft)]">Carregar, organizar e activar o contexto no chat.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <ActionButton variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploading || state === 'loading'}>
@@ -355,6 +364,44 @@ export function DocumentsPage({
               </div>
             ) : null}
           </SurfaceCard>
+        </div>
+      ) : null}
+
+      {/* OCR disclaimer modal */}
+      {ocrModal ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => { setOcrModal(null); setState('success'); setMessage(`${ocrModal.filename} processado com ${ocrModal.chunks_created} chunks (OCR).`) }}>
+          <div className="mx-4 w-full max-w-md rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-[color:var(--panel)] p-6 shadow-[var(--shadow-3)] animate-[fadeIn_0.2s_ease-out]" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-4 flex items-start gap-3">
+              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
+                <AlertTriangle size={18} />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-[color:var(--ink)]">Documento digitalizado (OCR)</h3>
+                <p className="mt-1 text-xs leading-relaxed text-[color:var(--ink-soft)]">
+                  O PDF <strong>{ocrModal.filename}</strong> foi processado por reconhecimento otico de caracteres (OCR).
+                </p>
+              </div>
+            </div>
+            <div className="space-y-2 rounded-[var(--radius-md)] bg-[color:var(--panel-muted)] p-3.5 text-xs leading-relaxed text-[color:var(--ink-soft)]">
+              <p><strong>O que isto significa:</strong> O documento e uma imagem digitalizada e o texto foi extraido automaticamente.</p>
+              <p><strong>Atencao:</strong> O OCR pode conter erros de reconhecimento. Recomenda-se verificar citacoes e artigos antes de os utilizar em contexto juridico.</p>
+              <p>Qualidade: <span className="font-medium text-amber-600 dark:text-amber-400">OCR</span> · Paginas: {ocrModal.page_count} · Chunks: {ocrModal.chunks_created}</p>
+            </div>
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={() => { setOcrModal(null); setState('idle') }}
+                className="rounded-[var(--radius-md)] px-3.5 py-2 text-xs font-medium text-[color:var(--ink-soft)] transition-colors hover:bg-[color:var(--panel-muted)]"
+              >
+                Fechar
+              </button>
+              <button
+                onClick={() => { setOcrModal(null); setState('success'); setMessage(`${ocrModal.filename} processado com ${ocrModal.chunks_created} chunks (OCR).`) }}
+                className="rounded-[var(--radius-md)] bg-[color:var(--accent)] px-3.5 py-2 text-xs font-medium text-white transition-all hover:bg-[color:var(--accent-hover)] active:scale-[0.97]"
+              >
+                Compreendo, continuar
+              </button>
+            </div>
+          </div>
         </div>
       ) : null}
     </section>
