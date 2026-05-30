@@ -51,6 +51,8 @@ export function AppShell({
   const location = useLocation()
   const navigate = useNavigate()
   const [rightPanelVisible, setRightPanelVisible] = useState(true)
+  const [highlightArticle, setHighlightArticle] = useState(false)
+  const [selectedSourceRef, setSelectedSourceRef] = useState(null)
 
   // Sync URL → activeSection on load/back-button
   useEffect(() => {
