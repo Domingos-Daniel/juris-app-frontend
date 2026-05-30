@@ -406,7 +406,7 @@ export function SidebarNav({
               </div>
             </div>
           ) : null}
-          <button onClick={onLogout} className="flex w-full items-center gap-2 rounded-[var(--radius-sm)] px-2 py-1.5 text-sm text-[color:var(--ink-soft)] transition-colors hover:bg-[color:var(--panel-muted)] hover:text-[color:var(--ink)]">
+          <button onClick={onLogout} className="flex w-full items-center gap-2 rounded-[var(--radius-sm)] border border-[color:var(--stroke)] px-2 py-2 text-sm text-[color:var(--ink-soft)] transition-colors hover:border-[color:var(--danger)] hover:bg-[color:var(--danger-soft)] hover:text-[color:var(--danger)] active:bg-[color:var(--danger-soft)] active:text-[color:var(--danger)]">
             <LogOut size={15} /> Sair
           </button>
         </footer>
