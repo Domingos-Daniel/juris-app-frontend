@@ -11,15 +11,16 @@ import { DocumentsPage } from '../features/documents/DocumentsPage'
 import { LibraryPage } from '../features/library/LibraryPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
 
-function IconButton({ onClick, label, className = '', children }) {
+function IconButton({ onClick, label, className = '', children, mobileLabel }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`grid h-8 w-8 place-items-center rounded-[var(--radius-sm)] border border-[color:var(--stroke)] bg-[color:var(--panel)] text-[color:var(--ink-soft)] transition-all hover:bg-[color:var(--panel-muted)] hover:text-[color:var(--ink)] active:scale-95 ${className}`}
+      className={`flex flex-col items-center justify-center gap-0.5 rounded-[var(--radius-sm)] border border-[color:var(--stroke)] bg-[color:var(--panel)] text-[color:var(--ink-soft)] transition-all hover:bg-[color:var(--panel-muted)] hover:text-[color:var(--ink)] active:scale-95 ${mobileLabel ? 'h-12 w-12 xl:h-8 xl:w-8' : 'h-8 w-8'} ${className}`}
       aria-label={label}
     >
       {children}
+      {mobileLabel ? <span className="xl:hidden text-[8px] leading-none text-[color:var(--ink-soft)]/70">{mobileLabel}</span> : null}
     </button>
   )
 }
@@ -171,19 +172,19 @@ export function AppShell({
               <IconButton onClick={() => setDesktopSidebarOpen((prev) => !prev)} label="Alternar menu lateral" className="hidden xl:grid">
                 {desktopSidebarOpen ? <PanelLeftClose size={15} /> : <PanelLeftOpen size={15} />}
               </IconButton>
-              <IconButton onClick={() => setMobileLeftOpen(true)} label="Abrir menu lateral" className="xl:hidden">
-                <Menu size={16} />
+              <IconButton onClick={() => setMobileLeftOpen(true)} label="Abrir menu lateral" className="xl:hidden" mobileLabel="Menu">
+                <Menu size={18} />
               </IconButton>
-              <IconButton onClick={handleNewConversation} label="Novo chat" className="xl:hidden">
-                <MessageSquarePlus size={16} />
+              <IconButton onClick={handleNewConversation} label="Novo chat" className="xl:hidden" mobileLabel="Novo">
+                <MessageSquarePlus size={18} />
               </IconButton>
             </>
           }
           centerNode={<StatusBadge healthy={healthOk} />}
           rightNode={
             <>
-              <IconButton onClick={onToggleTheme} label="Alternar tema">
-                {theme === 'light' ? <MoonStar size={15} /> : <SunMedium size={15} />}
+              <IconButton onClick={onToggleTheme} label="Alternar tema" mobileLabel={theme === 'light' ? 'Escuro' : 'Claro'}>
+                {theme === 'light' ? <MoonStar size={18} /> : <SunMedium size={18} />}
               </IconButton>
               {isChatSection ? (
                 <IconButton
@@ -192,8 +193,9 @@ export function AppShell({
                     if (isDesktop) { setRightPanelVisible((prev) => !prev) } else { setMobileRightOpen(true) }
                   }}
                   label={rightPanelVisible ? 'Ocultar referencias' : 'Mostrar referencias'}
+                  mobileLabel="Fontes"
                 >
-                  {rightPanelVisible ? <PanelRightClose size={15} /> : <PanelRightOpen size={15} />}
+                  {rightPanelVisible ? <PanelRightClose size={18} /> : <PanelRightOpen size={18} />}
                 </IconButton>
               ) : null}
             </>
