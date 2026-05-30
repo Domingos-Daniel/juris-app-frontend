@@ -53,6 +53,8 @@ export function AppShell({
   const [rightPanelVisible, setRightPanelVisible] = useState(true)
   const [highlightArticle, setHighlightArticle] = useState(false)
   const [selectedSourceRef, setSelectedSourceRef] = useState(null)
+  const [mobileLeftOpen, setMobileLeftOpen] = useState(false)
+  const [mobileRightOpen, setMobileRightOpen] = useState(false)
 
   // Sync URL → activeSection on load/back-button
   useEffect(() => {
