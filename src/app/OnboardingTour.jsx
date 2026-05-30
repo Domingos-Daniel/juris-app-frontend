@@ -135,7 +135,7 @@ function AIPrefForm({ onFinish, skipText }) {
               <p className="text-[11px] text-[color:var(--ink-soft)]">{desc}</p>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-1.5">
             {options.map((opt) => {
               const selected = form[key] === opt.v
               return (
@@ -143,7 +143,7 @@ function AIPrefForm({ onFinish, skipText }) {
                   key={opt.v}
                   type="button"
                   onClick={() => update(key, opt.v)}
-                  className={`flex flex-1 items-center gap-2 rounded-[var(--radius-md)] border px-3 py-2.5 text-left text-xs font-medium transition-all ${
+                  className={`flex items-center gap-1.5 rounded-[var(--radius-md)] border px-2.5 py-2 text-[11px] font-medium transition-all sm:gap-2 sm:px-3 sm:py-2.5 sm:text-xs ${
                     selected
                       ? 'border-[color:var(--accent)] bg-[color:var(--accent-soft)] text-[color:var(--accent)] shadow-[var(--shadow-1)]'
                       : 'border-[color:var(--stroke)] bg-[color:var(--bg)] text-[color:var(--ink-soft)] hover:border-[color:var(--ink-soft)]/30'

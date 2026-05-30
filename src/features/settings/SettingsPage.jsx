@@ -2,8 +2,48 @@ import { useState } from 'react'
 import { API_BASE_URL } from '../../shared/constants/app'
 import { SurfaceCard } from '../../shared/ui/SurfaceCard'
 import { InfoTooltip } from '../../shared/ui/InfoTooltip'
-import { MoonStar, SunMedium, BrainCircuit, Server, User, Mail, Phone, Save } from 'lucide-react'
+import { MoonStar, SunMedium, BrainCircuit, Server, User, Mail, Phone, Save, MessageSquare, BookOpen, Sparkles, Scale, LayoutList, Check } from 'lucide-react'
 import { updateProfileRequest, updatePreferencesRequest } from '../../shared/services/apiClient'
+
+const PREF_ICONS = {
+  tone: <MessageSquare size={15} />,
+  audience: <BookOpen size={15} />,
+  detail_level: <Sparkles size={15} />,
+  language_style: <Scale size={15} />,
+  response_format: <LayoutList size={15} />,
+}
+
+const PREF_FIELDS = [
+  { key: 'tone', label: 'Tom de resposta', desc: 'Como o assistente fala consigo',
+    options: [
+      { v: 'formal', l: 'Formal', d: 'Sério e profissional' },
+      { v: 'didatico', l: 'Explicativo', d: 'Ensina como um professor' },
+      { v: 'simples', l: 'Conversa', d: 'Linguagem do dia a dia' },
+    ]},
+  { key: 'audience', label: 'Nível de conhecimento', desc: 'O quanto sabe sobre leis',
+    options: [
+      { v: 'auto', l: 'Automático', d: 'O sistema escolhe por si' },
+      { v: 'leigo', l: 'Básico', d: 'Não sabe nada de leis' },
+      { v: 'tecnico', l: 'Avançado', d: 'É jurista ou advogado' },
+    ]},
+  { key: 'detail_level', label: 'Tamanho da resposta', desc: 'Quão longa deve ser a explicação',
+    options: [
+      { v: 'breve', l: 'Curta', d: 'Resposta direta, sem rodeios' },
+      { v: 'normal', l: 'Normal', d: 'Nem curta nem longa' },
+      { v: 'detalhado', l: 'Completa', d: 'Explicação aprofundada' },
+    ]},
+  { key: 'language_style', label: 'Tipo de linguagem', desc: 'Palavras técnicas ou simples',
+    options: [
+      { v: 'juridico', l: 'Jurídico', d: 'Termos técnicos de direito' },
+      { v: 'acessivel', l: 'Acessível', d: 'Palavras que todos entendem' },
+    ]},
+  { key: 'response_format', label: 'Formato da resposta', desc: 'Como a resposta é organizada',
+    options: [
+      { v: 'auto', l: 'Automático', d: 'O sistema escolhe por si' },
+      { v: 'paragrafos', l: 'Texto', d: 'Parágrafos corridos' },
+      { v: 'topicos', l: 'Tópicos', d: 'Pontos organizados' },
+    ]},
+]
 
 export function SettingsPage({ theme, toggleTheme, motor, onMotorChange, currentUser, authToken, onProfileUpdate }) {
   const [profile, setProfile] = useState({
@@ -34,7 +74,7 @@ export function SettingsPage({ theme, toggleTheme, motor, onMotorChange, current
   const savePrefs = async () => {
     try {
       await updatePreferencesRequest(authToken, prefs)
-      setPrefsMsg('Preferencias guardadas')
+      setPrefsMsg('Preferências guardadas')
       setTimeout(() => setPrefsMsg(''), 3000)
     } catch { setPrefsMsg('Erro ao guardar') }
   }
@@ -43,10 +83,10 @@ export function SettingsPage({ theme, toggleTheme, motor, onMotorChange, current
     <section className="fade-rise space-y-5 py-2">
       <div>
         <div className="flex items-center gap-2">
-          <h2 className="font-[family-name:var(--font-serif)] text-2xl font-semibold text-[color:var(--ink)] sm:text-3xl">Definicoes</h2>
-          <InfoTooltip content="Configure o tema visual, perfil pessoal, preferencias de IA e informacoes do backend." />
+          <h2 className="font-[family-name:var(--font-serif)] text-2xl font-semibold text-[color:var(--ink)] sm:text-3xl">Definições</h2>
+          <InfoTooltip content="Configure o tema visual, perfil pessoal, preferências de IA e informações do backend." />
         </div>
-        <p className="mt-1.5 text-sm text-[color:var(--ink-soft)]">Personaliza o comportamento da interface e do assistente juridico.</p>
+        <p className="mt-1.5 text-sm text-[color:var(--ink-soft)]">Personaliza o comportamento da interface e do assistente jurídico.</p>
       </div>
 
       {/* Theme */}
@@ -100,36 +140,49 @@ export function SettingsPage({ theme, toggleTheme, motor, onMotorChange, current
           <p className="text-xs text-[color:var(--ink-soft)]">Personalize o comportamento do assistente</p>
           </div>
         </div>
-        <div className="space-y-3.5">
-          <SelectRow label="Modo de falar" desc="Como o assistente se comunica" value={prefs.tone} onChange={(v) => setPrefs((p) => ({ ...p, tone: v }))} options={[
-            { v: 'formal', l: 'Formal', d: 'Linguagem seria e profissional' },
-            { v: 'didatico', l: 'Explicador', d: 'Ensina como um professor' },
-            { v: 'simples', l: 'Conversa', d: 'Linguagem do dia-a-dia' },
-          ]} />
-          <SelectRow label="Nivel de conhecimento" desc="O quanto sabe de leis" value={prefs.audience} onChange={(v) => setPrefs((p) => ({ ...p, audience: v }))} options={[
-            { v: 'auto', l: 'Autom.', d: 'O sistema decide' },
-            { v: 'leigo', l: 'Basico', d: 'Nao sabe nada de leis' },
-            { v: 'tecnico', l: 'Avancado', d: 'E jurista ou advogado' },
-          ]} />
-          <SelectRow label="Tamanho da resposta" desc="Quao longa a explicacao" value={prefs.detail_level} onChange={(v) => setPrefs((p) => ({ ...p, detail_level: v }))} options={[
-            { v: 'breve', l: 'Curta', d: 'Resposta directa' },
-            { v: 'normal', l: 'Normal', d: 'Nem curta nem longa' },
-            { v: 'detalhado', l: 'Completa', d: 'Explicacao aprofundada' },
-          ]} />
-          <SelectRow label="Tipo de palavras" desc="Termos tecnicos ou populares" value={prefs.language_style} onChange={(v) => setPrefs((p) => ({ ...p, language_style: v }))} options={[
-            { v: 'juridico', l: 'Juridico', d: 'Termos de direito' },
-            { v: 'acessivel', l: 'Popular', d: 'Todos entendem' },
-          ]} />
-          <SelectRow label="Apresentacao" desc="Como a resposta e organizada" value={prefs.response_format} onChange={(v) => setPrefs((p) => ({ ...p, response_format: v }))} options={[
-            { v: 'auto', l: 'Autom.', d: 'O sistema escolhe' },
-            { v: 'paragrafos', l: 'Texto', d: 'Paragrafos corridos' },
-            { v: 'topicos', l: 'Lista', d: 'Pontos organizados' },
-          ]} />
+        <div className="space-y-3">
+          {PREF_FIELDS.map(({ key, label, desc, options }) => (
+            <div key={key} className="rounded-[var(--radius-lg)] border border-[color:var(--stroke)] bg-[color:var(--panel-muted)] p-3.5 transition-all">
+              <div className="mb-2 flex items-center gap-2">
+                <span className="text-[color:var(--gold)]">{PREF_ICONS[key]}</span>
+                <div>
+                  <p className="text-sm font-semibold text-[color:var(--ink)]">{label}</p>
+                  <p className="text-[11px] text-[color:var(--ink-soft)]">{desc}</p>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {options.map((opt) => {
+                  const selected = prefs[key] === opt.v
+                  return (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => setPrefs((p) => ({ ...p, [key]: opt.v }))}
+                      className={`flex items-center gap-1.5 rounded-[var(--radius-md)] border px-2.5 py-2 text-[11px] font-medium transition-all sm:gap-2 sm:px-3 sm:py-2.5 sm:text-xs ${
+                        selected
+                          ? 'border-[color:var(--gold)] bg-[color:var(--gold)]/10 text-[color:var(--gold)] shadow-[var(--shadow-1)]'
+                          : 'border-[color:var(--stroke)] bg-[color:var(--bg)] text-[color:var(--ink-soft)] hover:border-[color:var(--ink-soft)]/30'
+                      }`}
+                    >
+                      <div className={`grid h-4 w-4 shrink-0 place-items-center rounded-full border-2 transition-all sm:h-5 sm:w-5 ${
+                        selected
+                          ? 'border-[color:var(--gold)] bg-[color:var(--gold)] text-white'
+                          : 'border-[color:var(--stroke)]'
+                      }`}>
+                        {selected && <Check size={10} strokeWidth={3} />}
+                      </div>
+                      <span>{opt.l}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
           <div className="flex items-center gap-3">
             <button onClick={savePrefs} className="flex items-center gap-1.5 rounded-[var(--radius-md)] bg-[color:var(--gold)] px-3.5 py-2 text-xs font-medium text-white transition-all hover:brightness-110 active:scale-[0.97]">
-              <Save size={12} /> Guardar preferencias
+              <Save size={12} /> Guardar preferências
             </button>
-            {prefsMsg ? <span className="text-xs text-[color:var(--success)]">{prefsMsg}</span> : null}
+            {prefsMsg ? <span className="text-xs text-[color:var(--success)] animate-[fadeIn_0.25s_ease-out]">{prefsMsg}</span> : null}
           </div>
         </div>
       </SurfaceCard>
@@ -156,27 +209,6 @@ function InputRow({ icon, label, value, onChange, type }) {
         <span className="text-[10px] font-medium text-[color:var(--ink-soft)]">{label}</span>
         <input type={type || 'text'} value={value} onChange={(e) => onChange(e.target.value)}
           className="mt-0.5 w-full rounded-[var(--radius-sm)] border border-[color:var(--stroke)] bg-[color:var(--bg)] px-2.5 py-1.5 text-sm outline-none focus:border-[color:var(--accent)]" />
-      </div>
-    </div>
-  )
-}
-
-function SelectRow({ label, desc, value, onChange, options }) {
-  return (
-    <div>
-      <div className="mb-1 flex items-end justify-between">
-        <span className="text-xs font-semibold text-[color:var(--ink)]">{label}</span>
-        {desc ? <span className="text-[10px] text-[color:var(--ink-soft)]/70">{desc}</span> : null}
-      </div>
-      <div className="flex gap-1.5 flex-wrap">
-        {options.map((opt) => (
-          <button key={opt.v} type="button" onClick={() => onChange(opt.v)}
-            title={opt.d || ''}
-            className={`flex-1 min-w-[55px] rounded-[var(--radius-sm)] border px-2 py-1.5 text-xs font-medium transition-all ${
-              value === opt.v ? 'border-[color:var(--accent)] bg-[color:var(--accent-soft)] text-[color:var(--accent)]' : 'border-[color:var(--stroke)] text-[color:var(--ink-soft)] hover:bg-[color:var(--panel-muted)]'
-            }`}
-          >{opt.l}</button>
-        ))}
       </div>
     </div>
   )
