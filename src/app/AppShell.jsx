@@ -106,7 +106,10 @@ export function AppShell({
   const isChatSection = state.activeSection === 'chat'
 
   const handleSelectConversation = (id) => selectConversation(id)
-  const handleNewConversation = () => startNewConversation()
+  const handleNewConversation = () => {
+    startNewConversation()
+    handleSectionChange('chat')
+  }
 
   return (
     <div className="relative flex h-[100dvh] w-full overflow-hidden bg-[color:var(--bg)] text-[color:var(--ink)]">

@@ -12,10 +12,9 @@ import {
   Settings,
   ChevronRight,
   ChevronsRight,
-  Zap,
 } from 'lucide-react'
 import { useState } from 'react'
-import { NAV_ITEMS, MOTORS } from '../constants/app'
+import { NAV_ITEMS } from '../constants/app'
 import { clipText } from '../utils/format'
 import { formatHumanTimestamp } from '../utils/format'
 import { classNames } from '../utils/format'
@@ -367,30 +366,6 @@ export function SidebarNav({
               </div>
             </>
           ) : null}
-        </div>
-
-        {/* Motor selector */}
-        <div className="border-t border-[color:var(--stroke)] px-3 py-3">
-          <div className="mb-2 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[color:var(--ink-soft)]">
-            <Zap size={11} />
-            Motor de IA
-          </div>
-          <div className="grid grid-cols-2 gap-1.5">
-            {MOTORS.map((option) => (
-              <button
-                key={option.id}
-                className={classNames(
-                  'rounded-[var(--radius-sm)] px-2.5 py-1.5 text-xs font-medium transition-all',
-                  motor === option.id
-                    ? 'bg-[color:var(--accent)] text-white shadow-[var(--shadow-xs)]'
-                    : 'bg-[color:var(--panel-muted)] text-[color:var(--ink-soft)] hover:text-[color:var(--ink)]',
-                )}
-                onClick={() => onMotorChange(option.id)}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* Footer */}
