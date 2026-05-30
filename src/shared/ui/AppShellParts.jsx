@@ -283,7 +283,7 @@ export function SidebarNav({
 
   return (
     <>
-      <aside className={classNames('h-screen w-[280px] max-w-[85vw] flex-col border-r border-[color:var(--stroke)] bg-[color:var(--sidebar)] sm:max-w-[280px] pb-8 sm:pb-0', className)}>
+      <aside className={classNames('h-screen w-[280px] max-w-[85vw] flex-col border-r border-[color:var(--stroke)] bg-[color:var(--sidebar)] sm:max-w-[280px] pb-10 sm:pb-0', className)}>
         {/* Header */}
         <header className="flex items-center gap-3 border-b border-[color:var(--stroke)] px-4 py-4">
           <div className="grid h-9 w-9 place-items-center rounded-[var(--radius-md)] bg-[color:var(--accent)] text-white">
