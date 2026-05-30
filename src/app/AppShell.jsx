@@ -169,8 +169,8 @@ export function AppShell({
           className="shrink-0"
           leftNode={
             <>
-              <IconButton onClick={() => setDesktopSidebarOpen((prev) => !prev)} label="Alternar menu lateral" className="hidden xl:grid">
-                {desktopSidebarOpen ? <PanelLeftClose size={15} /> : <PanelLeftOpen size={15} />}
+              <IconButton onClick={() => setDesktopSidebarOpen((prev) => !prev)} label="Alternar menu lateral" className="hidden xl:flex" mobileLabel={desktopSidebarOpen ? 'Fechar' : 'Menu'}>
+                {desktopSidebarOpen ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
               </IconButton>
               <IconButton onClick={() => setMobileLeftOpen(true)} label="Abrir menu lateral" className="xl:hidden" mobileLabel="Menu">
                 <Menu size={18} />

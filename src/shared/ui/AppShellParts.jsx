@@ -297,10 +297,11 @@ export function SidebarNav({
             <button
               type="button"
               onClick={onClose}
-              className="grid h-7 w-7 place-items-center rounded-[var(--radius-sm)] text-[color:var(--ink-soft)] transition-colors hover:bg-[color:var(--panel-muted)] hover:text-[color:var(--ink)]"
+              className="flex flex-col items-center justify-center gap-0.5 rounded-[var(--radius-sm)] border border-[color:var(--stroke)] bg-[color:var(--panel)] px-2 py-1 text-[color:var(--ink-soft)] transition-colors hover:bg-[color:var(--panel-muted)] hover:text-[color:var(--ink)]"
               aria-label="Fechar menu"
             >
               <X size={15} />
+              <span className="text-[8px] leading-none text-[color:var(--ink-soft)]/70">Fechar</span>
             </button>
           ) : null}
         </header>
