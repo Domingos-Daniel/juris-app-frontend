@@ -16,11 +16,11 @@ function IconButton({ onClick, label, className = '', children, mobileLabel }) {
     <button
       type="button"
       onClick={onClick}
-      className={`flex flex-col items-center justify-center gap-0.5 rounded-[var(--radius-sm)] border border-[color:var(--stroke)] bg-[color:var(--panel)] text-[color:var(--ink-soft)] transition-all hover:bg-[color:var(--panel-muted)] hover:text-[color:var(--ink)] active:scale-95 ${mobileLabel ? 'h-12 w-12 xl:h-8 xl:w-8' : 'h-8 w-8'} ${className}`}
+      className={`flex flex-col items-center justify-center gap-0.5 rounded-[var(--radius-sm)] border border-[color:var(--stroke)] bg-[color:var(--panel)] text-[color:var(--ink-soft)] transition-all hover:bg-[color:var(--panel-muted)] hover:text-[color:var(--ink)] active:scale-95 ${mobileLabel ? 'h-12 w-12' : 'h-8 w-8'} ${className}`}
       aria-label={label}
     >
       {children}
-      {mobileLabel ? <span className="xl:hidden text-[8px] leading-none text-[color:var(--ink-soft)]/70">{mobileLabel}</span> : null}
+      {mobileLabel ? <span className="text-[8px] leading-none text-[color:var(--ink-soft)]/70">{mobileLabel}</span> : null}
     </button>
   )
 }
