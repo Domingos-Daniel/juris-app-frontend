@@ -1,4 +1,4 @@
-import { Menu, MoonStar, SunMedium, X } from 'lucide-react'
+import { Menu, MoonStar, SunMedium, X, MessageSquarePlus } from 'lucide-react'
 import { PanelRightClose, PanelRightOpen, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -173,6 +173,9 @@ export function AppShell({
               </IconButton>
               <IconButton onClick={() => setMobileLeftOpen(true)} label="Abrir menu lateral" className="xl:hidden">
                 <Menu size={16} />
+              </IconButton>
+              <IconButton onClick={handleNewConversation} label="Novo chat" className="xl:hidden">
+                <MessageSquarePlus size={16} />
               </IconButton>
             </>
           }
