@@ -45,13 +45,12 @@ const PREF_FIELDS = [
     ]},
 ]
 
-export function SettingsPage({ theme, toggleTheme, motor, onMotorChange, currentUser, authToken, onProfileUpdate }) {
+export function SettingsPage({ theme, toggleTheme, motor, onMotorChange, currentUser, authToken, onProfileUpdate, onToast }) {
   const [profile, setProfile] = useState({
     name: currentUser?.name || '',
     email: currentUser?.email || '',
     phone: currentUser?.phone || '',
   })
-  const [profileMsg, setProfileMsg] = useState('')
 
   const [prefs, setPrefs] = useState({
     tone: currentUser?.ai_preferences?.tone || 'formal',
@@ -60,23 +59,20 @@ export function SettingsPage({ theme, toggleTheme, motor, onMotorChange, current
     language_style: currentUser?.ai_preferences?.language_style || 'acessivel',
     response_format: currentUser?.ai_preferences?.response_format || 'auto',
   })
-  const [prefsMsg, setPrefsMsg] = useState('')
 
   const saveProfile = async () => {
     try {
       await updateProfileRequest(authToken, profile.name, profile.email, profile.phone)
       onProfileUpdate?.()
-      setProfileMsg('Perfil atualizado')
-      setTimeout(() => setProfileMsg(''), 3000)
-    } catch { setProfileMsg('Erro ao guardar') }
+      onToast?.({ message: 'Perfil atualizado', type: 'success' })
+    } catch { onToast?.({ message: 'Erro ao guardar perfil', type: 'error' }) }
   }
 
   const savePrefs = async () => {
     try {
       await updatePreferencesRequest(authToken, prefs)
-      setPrefsMsg('Preferências guardadas')
-      setTimeout(() => setPrefsMsg(''), 3000)
-    } catch { setPrefsMsg('Erro ao guardar') }
+      onToast?.({ message: 'Preferências guardadas', type: 'success' })
+    } catch { onToast?.({ message: 'Erro ao guardar preferências', type: 'error' }) }
   }
 
   return (
@@ -124,7 +120,6 @@ export function SettingsPage({ theme, toggleTheme, motor, onMotorChange, current
             <button onClick={saveProfile} className="flex items-center gap-1.5 rounded-[var(--radius-md)] bg-[color:var(--accent)] px-3.5 py-2 text-xs font-medium text-white transition-all hover:bg-[color:var(--accent-hover)] active:scale-[0.97]">
               <Save size={12} /> Guardar perfil
             </button>
-            {profileMsg ? <span className="text-xs text-[color:var(--success)]">{profileMsg}</span> : null}
           </div>
         </div>
       </SurfaceCard>
@@ -182,7 +177,6 @@ export function SettingsPage({ theme, toggleTheme, motor, onMotorChange, current
             <button onClick={savePrefs} className="flex items-center gap-1.5 rounded-[var(--radius-md)] bg-[color:var(--gold)] px-3.5 py-2 text-xs font-medium text-white transition-all hover:brightness-110 active:scale-[0.97]">
               <Save size={12} /> Guardar preferências
             </button>
-            {prefsMsg ? <span className="text-xs text-[color:var(--success)] animate-[fadeIn_0.25s_ease-out]">{prefsMsg}</span> : null}
           </div>
         </div>
       </SurfaceCard>

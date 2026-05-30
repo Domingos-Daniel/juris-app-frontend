@@ -6,32 +6,35 @@ import { useTheme } from '../shared/hooks/useTheme'
 import { useAuth } from '../shared/hooks/useAuth'
 import { AppShell } from './AppShell'
 import { OnboardingTour } from './OnboardingTour'
-import { Landmark, Eye, EyeOff, CheckCircle, Mail, Lock, User, Phone, ArrowLeft } from 'lucide-react'
+import { Landmark, Eye, EyeOff, CheckCircle, AlertCircle, Mail, Lock, User, Phone, ArrowLeft } from 'lucide-react'
 import { STORAGE_KEYS } from '../shared/constants/app'
 
-function Toast({ visible, message }) {
-  if (!visible || !message) return null
+function Toast({ toast }) {
+  if (!toast?.message) return null
+  const isError = toast?.type === 'error'
   return (
     <div className="fixed top-6 left-1/2 z-50 -translate-x-1/2 animate-[fadeIn_0.3s_ease-out]">
-      <div className="flex items-center gap-2.5 rounded-[var(--radius-lg)] border border-green-200 bg-green-50 px-5 py-3 text-sm font-medium text-green-800 shadow-[var(--shadow-3)] dark:border-green-800 dark:bg-green-950 dark:text-green-200">
-        <CheckCircle size={18} />
-        {message}
+      <div className={`flex items-center gap-2.5 rounded-[var(--radius-lg)] border px-5 py-3 text-sm font-medium shadow-[var(--shadow-3)] ${
+        isError
+          ? 'border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200'
+          : 'border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-200'
+      }`}>
+        {isError ? <AlertCircle size={18} /> : <CheckCircle size={18} />}
+        {toast.message}
       </div>
     </div>
   )
 }
 
-function LoginScreen({ onLogin, onSwitchToRegister, loading, theme }) {
+function LoginScreen({ onLogin, onSwitchToRegister, loading, theme, onToast }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    setError('')
     try { await onLogin(email, password) }
-    catch (err) { setError(err.message || 'Falha ao autenticar') }
+    catch (err) { onToast?.({ message: err.message || 'Falha ao autenticar', type: 'error' }) }
   }
 
   return (
@@ -90,7 +93,6 @@ function LoginScreen({ onLogin, onSwitchToRegister, loading, theme }) {
               </div>
             </label>
           </div>
-          {error ? <p className="mt-3 animate-[fadeIn_0.25s_ease-out] text-xs text-red-500">{error}</p> : null}
           <button type="submit" disabled={loading} className="mt-4 flex w-full items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[color:var(--accent)] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-[color:var(--accent-hover)] active:scale-[0.97] disabled:opacity-50">
             {loading ? <><span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" /> A entrar...</> : 'Entrar'}
           </button>
@@ -104,20 +106,18 @@ function LoginScreen({ onLogin, onSwitchToRegister, loading, theme }) {
   )
 }
 
-function RegisterScreen({ onRegister, onSwitchToLogin, loading, theme }) {
+function RegisterScreen({ onRegister, onSwitchToLogin, loading, theme, onToast }) {
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirm: '' })
-  const [error, setError] = useState('')
   const [showPw, setShowPw] = useState(false)
 
   const update = (k, v) => setForm((p) => ({ ...p, [k]: v }))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('')
-    if (form.password !== form.confirm) { setError('Senhas nao coincidem'); return }
-    if (form.password.length < 6) { setError('Senha deve ter pelo menos 6 caracteres'); return }
+    if (form.password !== form.confirm) { onToast?.({ message: 'Senhas não coincidem', type: 'error' }); return }
+    if (form.password.length < 6) { onToast?.({ message: 'Senha deve ter pelo menos 6 caracteres', type: 'error' }); return }
     try { await onRegister(form.name, form.email, form.phone, form.password) }
-    catch (err) { setError(err.message || 'Falha ao criar conta') }
+    catch (err) { onToast?.({ message: err.message || 'Falha ao criar conta', type: 'error' }) }
   }
 
   return (
@@ -164,7 +164,6 @@ function RegisterScreen({ onRegister, onSwitchToLogin, loading, theme }) {
             <Input icon={<Lock size={15} />} label="Senha" type={showPw ? 'text' : 'password'} value={form.password} onChange={(v) => update('password', v)} required suffix={<button type="button" onClick={() => setShowPw(!showPw)} className="text-[color:var(--ink-soft)]">{showPw ? <EyeOff size={15} /> : <Eye size={15} />}</button>} />
             <Input icon={<Lock size={15} />} label="Confirmar senha" type="password" value={form.confirm} onChange={(v) => update('confirm', v)} required />
           </div>
-          {error ? <p className="mt-3 animate-[fadeIn_0.25s_ease-out] text-xs text-red-500">{error}</p> : null}
           <button type="submit" disabled={loading} className="mt-4 flex w-full items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[color:var(--accent)] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-[color:var(--accent-hover)] active:scale-[0.97] disabled:opacity-50">
             {loading ? <><span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" /> A criar conta...</> : 'Criar conta'}
           </button>
@@ -284,11 +283,11 @@ export function App() {
   if (!isAuthenticated) {
     return (
       <>
-        <Toast visible={!!toast?.message} message={toast?.message} />
+        <Toast toast={toast} />
         {authScreen === 'register' ? (
-          <RegisterScreen onRegister={handleRegister} onSwitchToLogin={() => setAuthScreen('login')} loading={authLoading} theme={theme} />
+          <RegisterScreen onRegister={handleRegister} onSwitchToLogin={() => setAuthScreen('login')} loading={authLoading} theme={theme} onToast={setToast} />
         ) : (
-          <LoginScreen onLogin={handleLogin} onSwitchToRegister={() => setAuthScreen('register')} loading={authLoading} theme={theme} />
+          <LoginScreen onLogin={handleLogin} onSwitchToRegister={() => setAuthScreen('register')} loading={authLoading} theme={theme} onToast={setToast} />
         )}
       </>
     )
@@ -296,7 +295,7 @@ export function App() {
 
   return (
     <>
-      <Toast visible={!!toast?.message} message={toast?.message} />
+      <Toast toast={toast} />
       {showTour ? <OnboardingTour userName={user?.name || ''} onFinish={handleTourFinish} /> : null}
       <Routes>
         <Route path="/*" element={
@@ -323,6 +322,7 @@ export function App() {
         currentUser={user}
         onLogout={logout}
           onHydrateFromServer={hydrateFromServer}
+          onToast={setToast}
         />
         } />
       </Routes>

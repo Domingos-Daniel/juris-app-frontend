@@ -48,6 +48,7 @@ export function AppShell({
   currentUser,
   onLogout,
   onHydrateFromServer,
+  onToast,
 }) {
   const location = useLocation()
   const navigate = useNavigate()
@@ -237,7 +238,7 @@ export function AppShell({
             ) : null}
             {state.activeSection === 'settings' ? (
               <div className="flex-1 min-h-0 overflow-y-auto custom-scroll">
-                <SettingsPage theme={theme} toggleTheme={onToggleTheme} motor={state.motor} onMotorChange={setMotor} />
+                <SettingsPage theme={theme} toggleTheme={onToggleTheme} motor={state.motor} onMotorChange={setMotor} currentUser={currentUser} authToken={authToken} onProfileUpdate={onHydrateFromServer} onToast={onToast} />
               </div>
             ) : null}
           </section>
