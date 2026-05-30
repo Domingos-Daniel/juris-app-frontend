@@ -64,7 +64,7 @@ function LoginScreen({ onLogin, onSwitchToRegister, loading, theme }) {
           <h1 className="font-[family-name:var(--font-serif)] text-2xl font-semibold text-[color:var(--ink)]">jURIS-APP</h1>
         </div>
         <p className="-mt-5 mb-6 text-center text-sm text-[color:var(--ink-soft)] lg:hidden">Assistente Juridico Angolano</p>
-        <form onSubmit={handleSubmit} className="rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-[color:var(--panel)] p-6 shadow-[var(--shadow-3)] sm:p-8">
+        <form onSubmit={handleSubmit} className="animate-[fadeIn_0.4s_ease-out] rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-[color:var(--panel)] p-6 shadow-[var(--shadow-3)] sm:p-8">
           <h2 className="text-lg font-semibold text-[color:var(--ink)]">Entrar na plataforma</h2>
           <div className="mt-5 space-y-3.5">
             <label className="block">
@@ -75,7 +75,7 @@ function LoginScreen({ onLogin, onSwitchToRegister, loading, theme }) {
               </div>
             </label>
             <label className="block">
-              <span className="text-xs font-medium text-[color:var(--ink-soft)]">Password</span>
+              <span className="text-xs font-medium text-[color:var(--ink-soft)]">Senha</span>
               <div className="mt-1 flex items-center gap-2 rounded-[var(--radius-md)] border border-[color:var(--stroke)] bg-[color:var(--bg)] px-3 py-2.5">
                 <Lock size={15} className="text-[color:var(--ink-soft)]" />
                 <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••" className="w-full bg-transparent text-sm outline-none placeholder:text-[color:var(--ink-soft)]/50" />
@@ -83,9 +83,9 @@ function LoginScreen({ onLogin, onSwitchToRegister, loading, theme }) {
               </div>
             </label>
           </div>
-          {error ? <p className="mt-3 text-xs text-red-500">{error}</p> : null}
-          <button type="submit" disabled={loading} className="mt-4 w-full rounded-[var(--radius-md)] bg-[color:var(--accent)] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-[color:var(--accent-hover)] active:scale-[0.97] disabled:opacity-50">
-            {loading ? 'A entrar...' : 'Entrar'}
+          {error ? <p className="mt-3 animate-[fadeIn_0.25s_ease-out] text-xs text-red-500">{error}</p> : null}
+          <button type="submit" disabled={loading} className="mt-4 flex w-full items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[color:var(--accent)] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-[color:var(--accent-hover)] active:scale-[0.97] disabled:opacity-50">
+            {loading ? <><span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" /> A entrar...</> : 'Entrar'}
           </button>
           {onSwitchToRegister ? (
             <button type="button" onClick={onSwitchToRegister} className="mt-3 w-full text-center text-xs text-[color:var(--accent)] hover:underline">Criar uma conta</button>
@@ -107,8 +107,8 @@ function RegisterScreen({ onRegister, onSwitchToLogin, loading, theme }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    if (form.password !== form.confirm) { setError('Passwords nao coincidem'); return }
-    if (form.password.length < 6) { setError('Password deve ter pelo menos 6 caracteres'); return }
+    if (form.password !== form.confirm) { setError('Senhas nao coincidem'); return }
+    if (form.password.length < 6) { setError('Senha deve ter pelo menos 6 caracteres'); return }
     try { await onRegister(form.name, form.email, form.phone, form.password) }
     catch (err) { setError(err.message || 'Falha ao criar conta') }
   }
@@ -142,18 +142,18 @@ function RegisterScreen({ onRegister, onSwitchToLogin, loading, theme }) {
           </div>
           <h1 className="font-[family-name:var(--font-serif)] text-2xl font-semibold text-[color:var(--ink)]">jURIS-APP</h1>
         </div>
-        <form onSubmit={handleSubmit} className="rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-[color:var(--panel)] p-6 shadow-[var(--shadow-3)] sm:p-8">
+        <form onSubmit={handleSubmit} className="animate-[fadeIn_0.4s_ease-out] rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-[color:var(--panel)] p-6 shadow-[var(--shadow-3)] sm:p-8">
           <h2 className="text-lg font-semibold text-[color:var(--ink)]">Criar conta</h2>
           <div className="mt-5 space-y-3">
             <Input icon={<User size={15} />} label="Nome completo" value={form.name} onChange={(v) => update('name', v)} required />
             <Input icon={<Mail size={15} />} label="Email" type="email" value={form.email} onChange={(v) => update('email', v)} required />
             <Input icon={<Phone size={15} />} label="Telefone (opcional)" value={form.phone} onChange={(v) => update('phone', v)} placeholder="+244 9XX XXX XXX" />
-            <Input icon={<Lock size={15} />} label="Password" type={showPw ? 'text' : 'password'} value={form.password} onChange={(v) => update('password', v)} required suffix={<button type="button" onClick={() => setShowPw(!showPw)} className="text-[color:var(--ink-soft)]">{showPw ? <EyeOff size={15} /> : <Eye size={15} />}</button>} />
-            <Input icon={<Lock size={15} />} label="Confirmar password" type="password" value={form.confirm} onChange={(v) => update('confirm', v)} required />
+            <Input icon={<Lock size={15} />} label="Senha" type={showPw ? 'text' : 'password'} value={form.password} onChange={(v) => update('password', v)} required suffix={<button type="button" onClick={() => setShowPw(!showPw)} className="text-[color:var(--ink-soft)]">{showPw ? <EyeOff size={15} /> : <Eye size={15} />}</button>} />
+            <Input icon={<Lock size={15} />} label="Confirmar senha" type="password" value={form.confirm} onChange={(v) => update('confirm', v)} required />
           </div>
-          {error ? <p className="mt-3 text-xs text-red-500">{error}</p> : null}
-          <button type="submit" disabled={loading} className="mt-4 w-full rounded-[var(--radius-md)] bg-[color:var(--accent)] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-[color:var(--accent-hover)] active:scale-[0.97] disabled:opacity-50">
-            {loading ? 'A criar conta...' : 'Criar conta'}
+          {error ? <p className="mt-3 animate-[fadeIn_0.25s_ease-out] text-xs text-red-500">{error}</p> : null}
+          <button type="submit" disabled={loading} className="mt-4 flex w-full items-center justify-center gap-2 rounded-[var(--radius-md)] bg-[color:var(--accent)] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-[color:var(--accent-hover)] active:scale-[0.97] disabled:opacity-50">
+            {loading ? <><span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" /> A criar conta...</> : 'Criar conta'}
           </button>
           {onSwitchToLogin ? (
             <button type="button" onClick={onSwitchToLogin} className="mt-3 w-full text-center text-xs text-[color:var(--accent)] hover:underline">Ja tenho conta — entrar</button>
