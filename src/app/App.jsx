@@ -34,7 +34,13 @@ function LoginScreen({ onLogin, onSwitchToRegister, loading, theme }) {
   }
 
   return (
-    <div data-theme={theme} className="flex min-h-[100dvh] bg-[color:var(--bg)] text-[color:var(--ink)]">
+    <div data-theme={theme} className="relative flex min-h-[100dvh] bg-[color:var(--bg)] text-[color:var(--ink)]">
+      {/* Background image — visible on both mobile & desktop */}
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-[0.08] lg:opacity-100"
+        style={{ backgroundImage: `url(/bg-auth.png)` }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40 lg:hidden" />
       {/* Left panel — branding + background (desktop only) */}
       <div className="relative hidden w-1/2 lg:flex items-center justify-center overflow-hidden bg-[color:var(--panel-muted)]">
         <div
@@ -54,7 +60,7 @@ function LoginScreen({ onLogin, onSwitchToRegister, loading, theme }) {
       </div>
 
       {/* Right panel — form */}
-      <div className="flex w-full items-center justify-center px-4 lg:w-1/2">
+      <div className="relative z-10 flex w-full items-center justify-center px-4 lg:w-1/2">
       <div className="w-full max-w-[420px]">
         {/* Mobile-only logo */}
         <div className="mb-8 flex items-center justify-center gap-3 lg:hidden">
@@ -64,7 +70,7 @@ function LoginScreen({ onLogin, onSwitchToRegister, loading, theme }) {
           <h1 className="font-[family-name:var(--font-serif)] text-2xl font-semibold text-[color:var(--ink)]">jURIS-APP</h1>
         </div>
         <p className="-mt-5 mb-6 text-center text-sm text-[color:var(--ink-soft)] lg:hidden">Assistente Juridico Angolano</p>
-        <form onSubmit={handleSubmit} className="animate-[fadeIn_0.4s_ease-out] rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-[color:var(--panel)] p-6 shadow-[var(--shadow-3)] sm:p-8">
+        <form onSubmit={handleSubmit} className="animate-[fadeIn_0.4s_ease-out] rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-[color:var(--panel)]/95 p-6 shadow-[var(--shadow-3)] backdrop-blur-sm sm:p-8 lg:bg-[color:var(--panel)]">
           <h2 className="text-lg font-semibold text-[color:var(--ink)]">Entrar na plataforma</h2>
           <div className="mt-5 space-y-3.5">
             <label className="block">
@@ -114,7 +120,13 @@ function RegisterScreen({ onRegister, onSwitchToLogin, loading, theme }) {
   }
 
   return (
-    <div data-theme={theme} className="flex min-h-[100dvh] bg-[color:var(--bg)] text-[color:var(--ink)]">
+    <div data-theme={theme} className="relative flex min-h-[100dvh] bg-[color:var(--bg)] text-[color:var(--ink)]">
+      {/* Background image — visible on both mobile & desktop */}
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-[0.08] lg:opacity-100"
+        style={{ backgroundImage: `url(/bg-auth.png)` }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40 lg:hidden" />
       {/* Left panel — branding + background (desktop only) */}
       <div className="relative hidden w-1/2 lg:flex items-center justify-center overflow-hidden bg-[color:var(--panel-muted)]">
         <div
@@ -134,7 +146,7 @@ function RegisterScreen({ onRegister, onSwitchToLogin, loading, theme }) {
       </div>
 
       {/* Right panel — register form */}
-      <div className="flex w-full items-center justify-center px-4 lg:w-1/2">
+      <div className="relative z-10 flex w-full items-center justify-center px-4 lg:w-1/2">
       <div className="w-full max-w-[420px]">
         <div className="mb-8 flex items-center justify-center gap-3 lg:hidden">
           <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[color:var(--accent)] text-white shadow-[var(--shadow-2)]">
@@ -142,7 +154,7 @@ function RegisterScreen({ onRegister, onSwitchToLogin, loading, theme }) {
           </div>
           <h1 className="font-[family-name:var(--font-serif)] text-2xl font-semibold text-[color:var(--ink)]">jURIS-APP</h1>
         </div>
-        <form onSubmit={handleSubmit} className="animate-[fadeIn_0.4s_ease-out] rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-[color:var(--panel)] p-6 shadow-[var(--shadow-3)] sm:p-8">
+        <form onSubmit={handleSubmit} className="animate-[fadeIn_0.4s_ease-out] rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-[color:var(--panel)]/95 p-6 shadow-[var(--shadow-3)] backdrop-blur-sm sm:p-8 lg:bg-[color:var(--panel)]">
           <h2 className="text-lg font-semibold text-[color:var(--ink)]">Criar conta</h2>
           <div className="mt-5 space-y-3">
             <Input icon={<User size={15} />} label="Nome completo" value={form.name} onChange={(v) => update('name', v)} required />
