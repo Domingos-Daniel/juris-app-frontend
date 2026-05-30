@@ -34,15 +34,36 @@ function LoginScreen({ onLogin, onSwitchToRegister, loading, theme }) {
   }
 
   return (
-    <div data-theme={theme} className="flex min-h-[100dvh] items-center justify-center bg-[color:var(--bg)] px-4 text-[color:var(--ink)]">
+    <div data-theme={theme} className="flex min-h-[100dvh] bg-[color:var(--bg)] text-[color:var(--ink)]">
+      {/* Left panel — branding + background (desktop only) */}
+      <div className="relative hidden w-1/2 lg:flex items-center justify-center overflow-hidden bg-[color:var(--panel-muted)]">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-40"
+          style={{ backgroundImage: `url(/bg-auth.png)` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-[color:var(--accent)]/30 to-transparent" />
+        <div className="relative z-10 flex flex-col items-center px-12 text-center">
+          <div className="grid h-20 w-20 place-items-center rounded-[2rem] bg-[color:var(--accent)] text-white shadow-[var(--shadow-3)]">
+            <Landmark size={36} />
+          </div>
+          <h1 className="mt-6 font-[family-name:var(--font-serif)] text-4xl font-semibold text-[color:var(--ink)]">jURIS-APP</h1>
+          <p className="mt-3 max-w-xs text-base leading-relaxed text-[color:var(--ink-soft)]">
+            Assistente juridico angolano com inteligencia artificial. Pesquise leis, carregue documentos, consulte jurisprudencia.
+          </p>
+        </div>
+      </div>
+
+      {/* Right panel — form */}
+      <div className="flex w-full items-center justify-center px-4 lg:w-1/2">
       <div className="w-full max-w-[420px]">
-        <div className="mb-8 flex items-center justify-center gap-3">
+        {/* Mobile-only logo */}
+        <div className="mb-8 flex items-center justify-center gap-3 lg:hidden">
           <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[color:var(--accent)] text-white shadow-[var(--shadow-2)]">
             <Landmark size={22} />
           </div>
           <h1 className="font-[family-name:var(--font-serif)] text-2xl font-semibold text-[color:var(--ink)]">jURIS-APP</h1>
         </div>
-        <p className="-mt-5 mb-6 text-center text-sm text-[color:var(--ink-soft)]">Assistente Juridico Angolano</p>
+        <p className="-mt-5 mb-6 text-center text-sm text-[color:var(--ink-soft)] lg:hidden">Assistente Juridico Angolano</p>
         <form onSubmit={handleSubmit} className="rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-[color:var(--panel)] p-6 shadow-[var(--shadow-3)] sm:p-8">
           <h2 className="text-lg font-semibold text-[color:var(--ink)]">Entrar na plataforma</h2>
           <div className="mt-5 space-y-3.5">
@@ -71,6 +92,7 @@ function LoginScreen({ onLogin, onSwitchToRegister, loading, theme }) {
           ) : null}
         </form>
       </div>
+      </div>
     </div>
   )
 }
@@ -92,9 +114,29 @@ function RegisterScreen({ onRegister, onSwitchToLogin, loading, theme }) {
   }
 
   return (
-    <div data-theme={theme} className="flex min-h-[100dvh] items-center justify-center bg-[color:var(--bg)] px-4 text-[color:var(--ink)]">
+    <div data-theme={theme} className="flex min-h-[100dvh] bg-[color:var(--bg)] text-[color:var(--ink)]">
+      {/* Left panel — branding + background (desktop only) */}
+      <div className="relative hidden w-1/2 lg:flex items-center justify-center overflow-hidden bg-[color:var(--panel-muted)]">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-40"
+          style={{ backgroundImage: `url(/bg-auth.png)` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-[color:var(--accent)]/30 to-transparent" />
+        <div className="relative z-10 flex flex-col items-center px-12 text-center">
+          <div className="grid h-20 w-20 place-items-center rounded-[2rem] bg-[color:var(--accent)] text-white shadow-[var(--shadow-3)]">
+            <Landmark size={36} />
+          </div>
+          <h1 className="mt-6 font-[family-name:var(--font-serif)] text-4xl font-semibold text-[color:var(--ink)]">jURIS-APP</h1>
+          <p className="mt-3 max-w-xs text-base leading-relaxed text-[color:var(--ink-soft)]">
+            Assistente juridico angolano com inteligencia artificial. Pesquise leis, carregue documentos, consulte jurisprudencia.
+          </p>
+        </div>
+      </div>
+
+      {/* Right panel — register form */}
+      <div className="flex w-full items-center justify-center px-4 lg:w-1/2">
       <div className="w-full max-w-[420px]">
-        <div className="mb-8 flex items-center justify-center gap-3">
+        <div className="mb-8 flex items-center justify-center gap-3 lg:hidden">
           <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[color:var(--accent)] text-white shadow-[var(--shadow-2)]">
             <Landmark size={22} />
           </div>
@@ -117,6 +159,7 @@ function RegisterScreen({ onRegister, onSwitchToLogin, loading, theme }) {
             <button type="button" onClick={onSwitchToLogin} className="mt-3 w-full text-center text-xs text-[color:var(--accent)] hover:underline">Ja tenho conta — entrar</button>
           ) : null}
         </form>
+      </div>
       </div>
     </div>
   )
