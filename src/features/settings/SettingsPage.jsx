@@ -96,16 +96,35 @@ export function SettingsPage({ theme, toggleTheme, motor, onMotorChange, current
             <BrainCircuit size={18} className="text-[color:var(--gold)]" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-[color:var(--ink)]">Preferencias da IA</h3>
-            <p className="text-xs text-[color:var(--ink-soft)]">Como o assistente deve responder</p>
+          <h3 className="text-sm font-semibold text-[color:var(--ink)]">Como a IA responde</h3>
+          <p className="text-xs text-[color:var(--ink-soft)]">Personalize o comportamento do assistente</p>
           </div>
         </div>
         <div className="space-y-3.5">
-          <SelectRow label="Tom" value={prefs.tone} onChange={(v) => setPrefs((p) => ({ ...p, tone: v }))} options={[{ v: 'formal', l: 'Formal' }, { v: 'didatico', l: 'Didatico' }, { v: 'simples', l: 'Simples' }]} />
-          <SelectRow label="Publico" value={prefs.audience} onChange={(v) => setPrefs((p) => ({ ...p, audience: v }))} options={[{ v: 'auto', l: 'Automatico' }, { v: 'leigo', l: 'Leigo' }, { v: 'tecnico', l: 'Tecnico' }]} />
-          <SelectRow label="Nivel de detalhe" value={prefs.detail_level} onChange={(v) => setPrefs((p) => ({ ...p, detail_level: v }))} options={[{ v: 'breve', l: 'Breve' }, { v: 'normal', l: 'Normal' }, { v: 'detalhado', l: 'Detalhado' }]} />
-          <SelectRow label="Estilo de linguagem" value={prefs.language_style} onChange={(v) => setPrefs((p) => ({ ...p, language_style: v }))} options={[{ v: 'juridico', l: 'Juridico' }, { v: 'acessivel', l: 'Acessivel' }]} />
-          <SelectRow label="Formato de resposta" value={prefs.response_format} onChange={(v) => setPrefs((p) => ({ ...p, response_format: v }))} options={[{ v: 'auto', l: 'Automatico' }, { v: 'paragrafos', l: 'Paragrafos' }, { v: 'topicos', l: 'Topicos' }]} />
+          <SelectRow label="Modo de falar" desc="Como o assistente se comunica" value={prefs.tone} onChange={(v) => setPrefs((p) => ({ ...p, tone: v }))} options={[
+            { v: 'formal', l: 'Formal', d: 'Linguagem seria e profissional' },
+            { v: 'didatico', l: 'Explicador', d: 'Ensina como um professor' },
+            { v: 'simples', l: 'Conversa', d: 'Linguagem do dia-a-dia' },
+          ]} />
+          <SelectRow label="Nivel de conhecimento" desc="O quanto sabe de leis" value={prefs.audience} onChange={(v) => setPrefs((p) => ({ ...p, audience: v }))} options={[
+            { v: 'auto', l: 'Autom.', d: 'O sistema decide' },
+            { v: 'leigo', l: 'Basico', d: 'Nao sabe nada de leis' },
+            { v: 'tecnico', l: 'Avancado', d: 'E jurista ou advogado' },
+          ]} />
+          <SelectRow label="Tamanho da resposta" desc="Quao longa a explicacao" value={prefs.detail_level} onChange={(v) => setPrefs((p) => ({ ...p, detail_level: v }))} options={[
+            { v: 'breve', l: 'Curta', d: 'Resposta directa' },
+            { v: 'normal', l: 'Normal', d: 'Nem curta nem longa' },
+            { v: 'detalhado', l: 'Completa', d: 'Explicacao aprofundada' },
+          ]} />
+          <SelectRow label="Tipo de palavras" desc="Termos tecnicos ou populares" value={prefs.language_style} onChange={(v) => setPrefs((p) => ({ ...p, language_style: v }))} options={[
+            { v: 'juridico', l: 'Juridico', d: 'Termos de direito' },
+            { v: 'acessivel', l: 'Popular', d: 'Todos entendem' },
+          ]} />
+          <SelectRow label="Apresentacao" desc="Como a resposta e organizada" value={prefs.response_format} onChange={(v) => setPrefs((p) => ({ ...p, response_format: v }))} options={[
+            { v: 'auto', l: 'Autom.', d: 'O sistema escolhe' },
+            { v: 'paragrafos', l: 'Texto', d: 'Paragrafos corridos' },
+            { v: 'topicos', l: 'Lista', d: 'Pontos organizados' },
+          ]} />
           <div className="flex items-center gap-3">
             <button onClick={savePrefs} className="flex items-center gap-1.5 rounded-[var(--radius-md)] bg-[color:var(--gold)] px-3.5 py-2 text-xs font-medium text-white transition-all hover:brightness-110 active:scale-[0.97]">
               <Save size={12} /> Guardar preferencias
@@ -142,14 +161,18 @@ function InputRow({ icon, label, value, onChange, type }) {
   )
 }
 
-function SelectRow({ label, value, onChange, options }) {
+function SelectRow({ label, desc, value, onChange, options }) {
   return (
     <div>
-      <span className="text-[10px] font-medium text-[color:var(--ink-soft)]">{label}</span>
-      <div className="mt-0.5 flex gap-1.5">
+      <div className="mb-1 flex items-end justify-between">
+        <span className="text-xs font-semibold text-[color:var(--ink)]">{label}</span>
+        {desc ? <span className="text-[10px] text-[color:var(--ink-soft)]/70">{desc}</span> : null}
+      </div>
+      <div className="flex gap-1.5 flex-wrap">
         {options.map((opt) => (
           <button key={opt.v} type="button" onClick={() => onChange(opt.v)}
-            className={`flex-1 rounded-[var(--radius-sm)] border px-2 py-1.5 text-xs font-medium transition-all ${
+            title={opt.d || ''}
+            className={`flex-1 min-w-[55px] rounded-[var(--radius-sm)] border px-2 py-1.5 text-xs font-medium transition-all ${
               value === opt.v ? 'border-[color:var(--accent)] bg-[color:var(--accent-soft)] text-[color:var(--accent)]' : 'border-[color:var(--stroke)] text-[color:var(--ink-soft)] hover:bg-[color:var(--panel-muted)]'
             }`}
           >{opt.l}</button>

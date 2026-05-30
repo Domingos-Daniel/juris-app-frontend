@@ -75,21 +75,49 @@ function AIPrefForm({ onFinish, skipText }) {
   return (
     <div className="mt-5 space-y-3.5">
       {[
-        { key: 'tone', label: 'Tom', options: [{ v: 'formal', l: 'Formal' }, { v: 'didatico', l: 'Didatico' }, { v: 'simples', l: 'Simples' }] },
-        { key: 'audience', label: 'Publico', options: [{ v: 'auto', l: 'Automatico' }, { v: 'leigo', l: 'Leigo' }, { v: 'tecnico', l: 'Tecnico' }] },
-        { key: 'detail_level', label: 'Nivel de detalhe', options: [{ v: 'breve', l: 'Breve' }, { v: 'normal', l: 'Normal' }, { v: 'detalhado', l: 'Detalhado' }] },
-        { key: 'language_style', label: 'Estilo', options: [{ v: 'juridico', l: 'Juridico' }, { v: 'acessivel', l: 'Acessivel' }] },
-        { key: 'response_format', label: 'Formato', options: [{ v: 'auto', l: 'Automatico' }, { v: 'paragrafos', l: 'Paragrafos' }, { v: 'topicos', l: 'Topicos' }] },
-      ].map(({ key, label, options }) => (
+        { key: 'tone', label: 'Modo de falar', desc: 'Como o assistente se comunica consigo',
+          options: [
+            { v: 'formal', l: 'Formal', d: 'Linguagem seria e profissional' },
+            { v: 'didatico', l: 'Explicador', d: 'Ensina como um professor' },
+            { v: 'simples', l: 'Conversa', d: 'Linguagem do dia-a-dia' },
+          ]},
+        { key: 'audience', label: 'Nivel de conhecimento', desc: 'O quanto sabe de leis',
+          options: [
+            { v: 'auto', l: 'Autom.', d: 'O sistema decide por si' },
+            { v: 'leigo', l: 'Basico', d: 'Nao sabe nada de leis' },
+            { v: 'tecnico', l: 'Avancado', d: 'E jurista ou advogado' },
+          ]},
+        { key: 'detail_level', label: 'Tamanho da resposta', desc: 'Quao longa deve ser a explicacao',
+          options: [
+            { v: 'breve', l: 'Curta', d: 'Resposta directa, sem voltas' },
+            { v: 'normal', l: 'Normal', d: 'Nem curta nem longa' },
+            { v: 'detalhado', l: 'Completa', d: 'Explicacao aprofundada' },
+          ]},
+        { key: 'language_style', label: 'Tipo de palavras', desc: 'Termos tecnicos ou linguagem comum',
+          options: [
+            { v: 'juridico', l: 'Juridico', d: 'Termos tecnicos de direito' },
+            { v: 'acessivel', l: 'Popular', d: 'Palavras que todos entendem' },
+          ]},
+        { key: 'response_format', label: 'Apresentacao', desc: 'Como a resposta e organizada',
+          options: [
+            { v: 'auto', l: 'Autom.', d: 'O sistema escolhe por si' },
+            { v: 'paragrafos', l: 'Texto', d: 'Paragrafos corridos' },
+            { v: 'topicos', l: 'Lista', d: 'Pontos organizados' },
+          ]},
+      ].map(({ key, label, desc, options }) => (
         <div key={key}>
-          <label className="mb-1 block text-xs font-medium text-[color:var(--ink-soft)]">{label}</label>
-          <div className="flex gap-1.5">
+          <div className="mb-1.5 flex items-end justify-between">
+            <label className="text-xs font-semibold text-[color:var(--ink)]">{label}</label>
+            <span className="text-[10px] text-[color:var(--ink-soft)]/70">{desc}</span>
+          </div>
+          <div className="flex gap-1.5 flex-wrap">
             {options.map((opt) => (
               <button
                 key={opt.v}
                 type="button"
                 onClick={() => update(key, opt.v)}
-                className={`flex-1 rounded-[var(--radius-sm)] border px-2 py-1.5 text-xs font-medium transition-all ${
+                title={opt.d}
+                className={`flex-1 min-w-[60px] rounded-[var(--radius-sm)] border px-2 py-2 text-xs font-medium transition-all ${
                   form[key] === opt.v
                     ? 'border-[color:var(--accent)] bg-[color:var(--accent-soft)] text-[color:var(--accent)]'
                     : 'border-[color:var(--stroke)] text-[color:var(--ink-soft)] hover:bg-[color:var(--panel-muted)]'
