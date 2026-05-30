@@ -1,6 +1,7 @@
 import { Menu, MoonStar, SunMedium, X } from 'lucide-react'
 import { PanelRightClose, PanelRightOpen, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { StatusBadge } from '../shared/ui/StatusBadge'
 import { LegalNoticeBanner, SidebarNav, ShellActionButtons, TopBar } from '../shared/ui/AppShellParts'
 import { ArticleViewer } from '../shared/ui/ArticleViewer'
@@ -47,48 +48,27 @@ export function AppShell({
   onLogout,
   onHydrateFromServer,
 }) {
+  const location = useLocation()
+  const navigate = useNavigate()
   const [rightPanelVisible, setRightPanelVisible] = useState(true)
-  const [selectedSourceRef, setSelectedSourceRef] = useState(null)
-  const [highlightArticle, setHighlightArticle] = useState(false)
-  const [noticeDismissed, setNoticeDismissed] = useState(() => {
-    try {
-      return sessionStorage.getItem('legal_notice_dismissed') === '1'
-    } catch {
-      return false
+
+  // Sync URL → activeSection on load/back-button
+  useEffect(() => {
+    const path = location.pathname.replace(/^\/+/, '')
+    const section = path || 'chat'
+    if (state.activeSection !== section) {
+      setActiveSection(section)
     }
-  })
-  const [mobileLeftOpen, setMobileLeftOpen] = useState(false)
-  const [mobileRightOpen, setMobileRightOpen] = useState(false)
-  const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true)
+  }, [location.pathname])
 
-  const dismissNotice = () => {
-    setNoticeDismissed(true)
-    try {
-      sessionStorage.setItem('legal_notice_dismissed', '1')
-    } catch {
-      // no-op
+  // Route-aware section change handler
+  const handleSectionChange = (section) => {
+    setMobileLeftOpen(false)
+    setActiveSection(section)
+    const path = section === 'chat' ? '/' : `/${section}`
+    if (location.pathname !== path) {
+      navigate(path, { replace: true })
     }
-  }
-
-  const handleNewConversation = () => {
-    setNoticeDismissed(false)
-    setMobileLeftOpen(false)
-    try {
-      sessionStorage.removeItem('legal_notice_dismissed')
-    } catch {
-      // no-op
-    }
-    startNewConversation()
-  }
-
-  const handleSelectConversation = (conversationId) => {
-    setMobileLeftOpen(false)
-    selectConversation(conversationId)
-  }
-
-  const handleSectionChange = (sectionId) => {
-    setMobileLeftOpen(false)
-    setActiveSection(sectionId)
   }
 
   const handleSelectSourceRef = (source) => {

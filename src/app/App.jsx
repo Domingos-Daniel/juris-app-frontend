@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import { fetchHealth } from '../shared/services/apiClient'
 import { useAppState } from '../shared/hooks/useAppState'
 import { useTheme } from '../shared/hooks/useTheme'
@@ -35,13 +36,13 @@ function LoginScreen({ onLogin, onSwitchToRegister, loading, theme }) {
   return (
     <div data-theme={theme} className="flex min-h-[100dvh] items-center justify-center bg-[color:var(--bg)] px-4 text-[color:var(--ink)]">
       <div className="w-full max-w-[420px]">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-[color:var(--accent)] text-white shadow-[var(--shadow-2)]">
-            <Landmark size={24} />
+        <div className="mb-8 flex items-center justify-center gap-3">
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[color:var(--accent)] text-white shadow-[var(--shadow-2)]">
+            <Landmark size={22} />
           </div>
-          <h1 className="font-[family-name:var(--font-serif)] text-3xl font-semibold text-[color:var(--ink)]">jURIS-APP</h1>
-          <p className="mt-1.5 text-sm text-[color:var(--ink-soft)]">Assistente Juridico Angolano</p>
+          <h1 className="font-[family-name:var(--font-serif)] text-2xl font-semibold text-[color:var(--ink)]">jURIS-APP</h1>
         </div>
+        <p className="-mt-5 mb-6 text-center text-sm text-[color:var(--ink-soft)]">Assistente Juridico Angolano</p>
         <form onSubmit={handleSubmit} className="rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-[color:var(--panel)] p-6 shadow-[var(--shadow-3)] sm:p-8">
           <h2 className="text-lg font-semibold text-[color:var(--ink)]">Entrar na plataforma</h2>
           <div className="mt-5 space-y-3.5">
@@ -93,11 +94,11 @@ function RegisterScreen({ onRegister, onSwitchToLogin, loading, theme }) {
   return (
     <div data-theme={theme} className="flex min-h-[100dvh] items-center justify-center bg-[color:var(--bg)] px-4 text-[color:var(--ink)]">
       <div className="w-full max-w-[420px]">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-[color:var(--accent)] text-white shadow-[var(--shadow-2)]">
-            <Landmark size={24} />
+        <div className="mb-8 flex items-center justify-center gap-3">
+          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[color:var(--accent)] text-white shadow-[var(--shadow-2)]">
+            <Landmark size={22} />
           </div>
-          <h1 className="font-[family-name:var(--font-serif)] text-3xl font-semibold text-[color:var(--ink)]">jURIS-APP</h1>
+          <h1 className="font-[family-name:var(--font-serif)] text-2xl font-semibold text-[color:var(--ink)]">jURIS-APP</h1>
         </div>
         <form onSubmit={handleSubmit} className="rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-[color:var(--panel)] p-6 shadow-[var(--shadow-3)] sm:p-8">
           <h2 className="text-lg font-semibold text-[color:var(--ink)]">Criar conta</h2>
@@ -235,7 +236,9 @@ export function App() {
     <>
       <Toast visible={!!toast?.message} message={toast?.message} />
       {showTour ? <OnboardingTour userName={user?.name || ''} onFinish={handleTourFinish} /> : null}
-      <AppShell
+      <Routes>
+        <Route path="/*" element={
+          <AppShell
         healthOk={healthOk}
         theme={theme}
         onToggleTheme={toggleTheme}
@@ -257,8 +260,10 @@ export function App() {
         authToken={token}
         currentUser={user}
         onLogout={logout}
-        onHydrateFromServer={hydrateFromServer}
-      />
+          onHydrateFromServer={hydrateFromServer}
+        />
+        } />
+      </Routes>
     </>
   )
 }
