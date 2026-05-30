@@ -105,6 +105,9 @@ export function AppShell({
   const hasSources = hasAnySources && rightPanelVisible
   const isChatSection = state.activeSection === 'chat'
 
+  const handleSelectConversation = (id) => selectConversation(id)
+  const handleNewConversation = () => startNewConversation()
+
   return (
     <div className="relative flex h-[100dvh] w-full overflow-hidden bg-[color:var(--bg)] text-[color:var(--ink)]">
       {/* Mobile overlay */}
