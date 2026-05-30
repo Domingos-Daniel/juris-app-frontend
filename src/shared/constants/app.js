@@ -2,6 +2,7 @@ export const STORAGE_KEYS = {
   theme: 'tribunal:theme',
   appState: 'tribunal:app-state',
   auth: 'tribunal:auth',
+  onboardingDone: 'tribunal:onboarding-done',
 }
 
 export const NAV_ITEMS = [

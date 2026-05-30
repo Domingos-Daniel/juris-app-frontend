@@ -7,6 +7,7 @@ import { useAuth } from '../shared/hooks/useAuth'
 import { AppShell } from './AppShell'
 import { OnboardingTour } from './OnboardingTour'
 import { Landmark, Eye, EyeOff, CheckCircle, Mail, Lock, User, Phone, ArrowLeft } from 'lucide-react'
+import { STORAGE_KEYS } from '../shared/constants/app'
 
 function Toast({ visible, message }) {
   if (!visible || !message) return null
@@ -233,6 +234,10 @@ export function App() {
     if (isAuthenticated && !prevAuthRef.current && user) {
       setToast({ message: `Bem-vindo, ${user.name}` })
       startNewConversation()
+      const onboardingDone = localStorage.getItem(STORAGE_KEYS.onboardingDone)
+      if (!onboardingDone) {
+        setShowTour(true)
+      }
     }
     prevAuthRef.current = isAuthenticated
   }, [isAuthenticated, user])
@@ -251,6 +256,7 @@ export function App() {
   const handleRegister = async (name, email, phone, password) => {
     try {
       const userData = await register(name, email, phone, password)
+      localStorage.removeItem(STORAGE_KEYS.onboardingDone)
       setShowTour(true)
       return userData
     } catch (err) { throw err }
@@ -258,6 +264,7 @@ export function App() {
 
   const handleTourFinish = async (prefs) => {
     setShowTour(false)
+    localStorage.setItem(STORAGE_KEYS.onboardingDone, 'true')
     if (token) {
       try { await updatePreferences(token, prefs) } catch {}
     }
