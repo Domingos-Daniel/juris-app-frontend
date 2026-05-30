@@ -1,6 +1,7 @@
 import { Mic, Paperclip, SendHorizontal, X } from 'lucide-react'
 import { classNames } from '../utils/format'
 import { VoiceVisualizer } from './VoiceVisualizer'
+import { useEffect, useRef } from 'react'
 
 export function ChatComposer({
   value,
@@ -18,6 +19,16 @@ export function ChatComposer({
 }) {
   const isRecording = voiceState === 'recording' || voiceState === 'listening' || voiceState === 'connecting'
   const isProcessing = voiceState === 'processing'
+  const textareaRef = useRef(null)
+
+  const autoResize = () => {
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = Math.min(el.scrollHeight, 160) + 'px'
+  }
+
+  useEffect(() => { autoResize() }, [value])
 
   return (
     <form className="mx-auto w-full max-w-3xl rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-[color:var(--panel)] shadow-[var(--shadow-2)] transition-shadow focus-within:shadow-[var(--shadow-3)]" onSubmit={onSubmit}>
@@ -60,13 +71,14 @@ export function ChatComposer({
 
         <div className="relative flex-1">
           <textarea
+            ref={textareaRef}
             value={value}
             onChange={(event) => onChange(event.target.value)}
             rows={1}
             placeholder="Escreva a sua pergunta jurídica..."
             className="w-full resize-none bg-transparent px-3 py-2.5 text-[16px] leading-relaxed text-[color:var(--ink)] outline-none placeholder:text-[color:var(--ink-soft)]/50 sm:px-4 sm:py-2 sm:text-sm"
             style={{ maxHeight: '160px', overflowY: 'auto' }}
-            onInput={(e) => { e.target.style.height = 'auto'; e.target.style.height = Math.min(e.target.scrollHeight, 160) + 'px' }}
+            onInput={autoResize}
           />
         </div>
 
