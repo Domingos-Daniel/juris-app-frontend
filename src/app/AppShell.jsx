@@ -55,6 +55,7 @@ export function AppShell({
   const [selectedSourceRef, setSelectedSourceRef] = useState(null)
   const [mobileLeftOpen, setMobileLeftOpen] = useState(false)
   const [mobileRightOpen, setMobileRightOpen] = useState(false)
+  const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true)
 
   // Sync URL → activeSection on load/back-button
   useEffect(() => {
