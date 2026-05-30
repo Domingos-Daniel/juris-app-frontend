@@ -47,6 +47,31 @@ export async function loginRequest(username, password) {
   })
 }
 
+export async function registerRequest(name, email, phone, password) {
+  return request('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({ name, email, phone, password }),
+  })
+}
+
+export async function updateProfileRequest(token, name, email, phone) {
+  return request('/auth/me', {
+    method: 'PUT',
+    body: JSON.stringify({ name, email, phone }),
+  }, token)
+}
+
+export async function updatePreferencesRequest(token, prefs) {
+  return request('/auth/me/preferences', {
+    method: 'PUT',
+    body: JSON.stringify(prefs),
+  }, token)
+}
+
+export async function fetchPreferences(token) {
+  return request('/auth/me/preferences', {}, token)
+}
+
 export async function fetchMe(token) {
   return request('/auth/me', {}, token)
 }

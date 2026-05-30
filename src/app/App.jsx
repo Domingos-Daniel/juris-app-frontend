@@ -4,7 +4,8 @@ import { useAppState } from '../shared/hooks/useAppState'
 import { useTheme } from '../shared/hooks/useTheme'
 import { useAuth } from '../shared/hooks/useAuth'
 import { AppShell } from './AppShell'
-import { Landmark, Eye, EyeOff, CheckCircle } from 'lucide-react'
+import { OnboardingTour } from './OnboardingTour'
+import { Landmark, Eye, EyeOff, CheckCircle, Mail, Lock, User, Phone, ArrowLeft } from 'lucide-react'
 
 function Toast({ visible, message }) {
   if (!visible || !message) return null
@@ -18,20 +19,17 @@ function Toast({ visible, message }) {
   )
 }
 
-function LoginScreen({ onLogin, loading, theme }) {
-  const [username, setUsername] = useState('admin')
-  const [password, setPassword] = useState('Admin123@')
+function LoginScreen({ onLogin, onSwitchToRegister, loading, theme }) {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
   const handleSubmit = async (event) => {
     event.preventDefault()
     setError('')
-    try {
-      await onLogin(username, password)
-    } catch (err) {
-      setError(err.message || 'Falha ao autenticar')
-    }
+    try { await onLogin(email, password) }
+    catch (err) { setError(err.message || 'Falha ao autenticar') }
   }
 
   return (
@@ -44,69 +42,101 @@ function LoginScreen({ onLogin, loading, theme }) {
           <h1 className="font-[family-name:var(--font-serif)] text-3xl font-semibold text-[color:var(--ink)]">jURIS-APP</h1>
           <p className="mt-1.5 text-sm text-[color:var(--ink-soft)]">Assistente Juridico Angolano</p>
         </div>
-
         <form onSubmit={handleSubmit} className="rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-[color:var(--panel)] p-6 shadow-[var(--shadow-3)] sm:p-8">
           <h2 className="text-lg font-semibold text-[color:var(--ink)]">Entrar na plataforma</h2>
-          <p className="mt-1 text-sm text-[color:var(--ink-soft)]">Insira as suas credenciais para aceder ao sistema.</p>
-
-          <div className="mt-6 space-y-4">
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-[color:var(--ink)]">Utilizador</label>
-              <input
-                value={username}
-                onChange={(event) => setUsername(event.target.value)}
-                className="w-full rounded-[var(--radius-md)] border border-[color:var(--stroke)] bg-[color:var(--panel-muted)] px-3.5 py-2.5 text-sm outline-none transition-colors focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-glow)]"
-                autoComplete="username"
-              />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-[color:var(--ink)]">Senha</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  className="w-full rounded-[var(--radius-md)] border border-[color:var(--stroke)] bg-[color:var(--panel-muted)] px-3.5 py-2.5 pr-10 text-sm outline-none transition-colors focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent-glow)]"
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[color:var(--ink-soft)] transition-colors hover:text-[color:var(--ink)]"
-                  tabIndex={-1}
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
+          <div className="mt-5 space-y-3.5">
+            <label className="block">
+              <span className="text-xs font-medium text-[color:var(--ink-soft)]">Email</span>
+              <div className="mt-1 flex items-center gap-2 rounded-[var(--radius-md)] border border-[color:var(--stroke)] bg-[color:var(--bg)] px-3 py-2.5">
+                <Mail size={15} className="text-[color:var(--ink-soft)]" />
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="seu@email.com" className="w-full bg-transparent text-sm outline-none placeholder:text-[color:var(--ink-soft)]/50" />
               </div>
-            </div>
+            </label>
+            <label className="block">
+              <span className="text-xs font-medium text-[color:var(--ink-soft)]">Password</span>
+              <div className="mt-1 flex items-center gap-2 rounded-[var(--radius-md)] border border-[color:var(--stroke)] bg-[color:var(--bg)] px-3 py-2.5">
+                <Lock size={15} className="text-[color:var(--ink-soft)]" />
+                <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••" className="w-full bg-transparent text-sm outline-none placeholder:text-[color:var(--ink-soft)]/50" />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-[color:var(--ink-soft)]">{showPassword ? <EyeOff size={15} /> : <Eye size={15} />}</button>
+              </div>
+            </label>
           </div>
-
-          {error ? (
-            <div className="mt-4 rounded-[var(--radius-md)] border border-red-200 bg-[color:var(--danger-soft)] px-3.5 py-2.5 text-sm text-red-600 dark:border-red-800 dark:text-red-400">
-              {error}
-            </div>
-          ) : null}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="mt-6 w-full rounded-[var(--radius-md)] bg-[color:var(--accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-xs)] transition-all hover:bg-[color:var(--accent-hover)] hover:shadow-[var(--shadow-1)] active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
-          >
+          {error ? <p className="mt-3 text-xs text-red-500">{error}</p> : null}
+          <button type="submit" disabled={loading} className="mt-4 w-full rounded-[var(--radius-md)] bg-[color:var(--accent)] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-[color:var(--accent-hover)] active:scale-[0.97] disabled:opacity-50">
             {loading ? 'A entrar...' : 'Entrar'}
           </button>
+          {onSwitchToRegister ? (
+            <button type="button" onClick={onSwitchToRegister} className="mt-3 w-full text-center text-xs text-[color:var(--accent)] hover:underline">Criar uma conta</button>
+          ) : null}
         </form>
-
-        <p className="mt-6 text-center text-xs text-[color:var(--ink-soft)]">
-          Este sistema oferece apoio informativo e não substitui aconselhamento jurídico profissional.
-        </p>
       </div>
     </div>
   )
 }
 
+function RegisterScreen({ onRegister, onSwitchToLogin, loading, theme }) {
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirm: '' })
+  const [error, setError] = useState('')
+  const [showPw, setShowPw] = useState(false)
+
+  const update = (k, v) => setForm((p) => ({ ...p, [k]: v }))
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError('')
+    if (form.password !== form.confirm) { setError('Passwords nao coincidem'); return }
+    if (form.password.length < 6) { setError('Password deve ter pelo menos 6 caracteres'); return }
+    try { await onRegister(form.name, form.email, form.phone, form.password) }
+    catch (err) { setError(err.message || 'Falha ao criar conta') }
+  }
+
+  return (
+    <div data-theme={theme} className="flex min-h-[100dvh] items-center justify-center bg-[color:var(--bg)] px-4 text-[color:var(--ink)]">
+      <div className="w-full max-w-[420px]">
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-2xl bg-[color:var(--accent)] text-white shadow-[var(--shadow-2)]">
+            <Landmark size={24} />
+          </div>
+          <h1 className="font-[family-name:var(--font-serif)] text-3xl font-semibold text-[color:var(--ink)]">jURIS-APP</h1>
+        </div>
+        <form onSubmit={handleSubmit} className="rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-[color:var(--panel)] p-6 shadow-[var(--shadow-3)] sm:p-8">
+          <h2 className="text-lg font-semibold text-[color:var(--ink)]">Criar conta</h2>
+          <div className="mt-5 space-y-3">
+            <Input icon={<User size={15} />} label="Nome completo" value={form.name} onChange={(v) => update('name', v)} required />
+            <Input icon={<Mail size={15} />} label="Email" type="email" value={form.email} onChange={(v) => update('email', v)} required />
+            <Input icon={<Phone size={15} />} label="Telefone (opcional)" value={form.phone} onChange={(v) => update('phone', v)} placeholder="+244 9XX XXX XXX" />
+            <Input icon={<Lock size={15} />} label="Password" type={showPw ? 'text' : 'password'} value={form.password} onChange={(v) => update('password', v)} required suffix={<button type="button" onClick={() => setShowPw(!showPw)} className="text-[color:var(--ink-soft)]">{showPw ? <EyeOff size={15} /> : <Eye size={15} />}</button>} />
+            <Input icon={<Lock size={15} />} label="Confirmar password" type="password" value={form.confirm} onChange={(v) => update('confirm', v)} required />
+          </div>
+          {error ? <p className="mt-3 text-xs text-red-500">{error}</p> : null}
+          <button type="submit" disabled={loading} className="mt-4 w-full rounded-[var(--radius-md)] bg-[color:var(--accent)] px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-[color:var(--accent-hover)] active:scale-[0.97] disabled:opacity-50">
+            {loading ? 'A criar conta...' : 'Criar conta'}
+          </button>
+          {onSwitchToLogin ? (
+            <button type="button" onClick={onSwitchToLogin} className="mt-3 w-full text-center text-xs text-[color:var(--accent)] hover:underline">Ja tenho conta — entrar</button>
+          ) : null}
+        </form>
+      </div>
+    </div>
+  )
+}
+
+function Input({ icon, label, type, value, onChange, required, placeholder, suffix }) {
+  return (
+    <label className="block">
+      <span className="text-xs font-medium text-[color:var(--ink-soft)]">{label}</span>
+      <div className="mt-1 flex items-center gap-2 rounded-[var(--radius-md)] border border-[color:var(--stroke)] bg-[color:var(--bg)] px-3 py-2.5">
+        <span className="text-[color:var(--ink-soft)]">{icon}</span>
+        <input type={type || 'text'} value={value} onChange={(e) => onChange(e.target.value)} required={required} placeholder={placeholder || ''} className="w-full bg-transparent text-sm outline-none placeholder:text-[color:var(--ink-soft)]/50" />
+        {suffix}
+      </div>
+    </label>
+  )
+}
+
 export function App() {
   const { theme, toggleTheme } = useTheme()
-  const { token, user, loading: authLoading, isAuthenticated, login, logout } = useAuth()
+  const { token, user, loading: authLoading, isAuthenticated, login, register, logout, updatePreferences, getPreferences } = useAuth()
   const {
     state,
     selectedConversation,
@@ -127,6 +157,8 @@ export function App() {
   } = useAppState(token)
   const [healthOk, setHealthOk] = useState(false)
   const [toast, setToast] = useState(null)
+  const [showTour, setShowTour] = useState(false)
+  const [authScreen, setAuthScreen] = useState('login')
   const prevAuthRef = useRef(false)
 
   useEffect(() => {
@@ -155,11 +187,23 @@ export function App() {
     return () => clearTimeout(timer)
   }, [toast])
 
-  const handleLogin = async (username, password) => {
+  const handleLogin = async (email, password) => {
+    try { return await login(email, password) }
+    catch (err) { throw err }
+  }
+
+  const handleRegister = async (name, email, phone, password) => {
     try {
-      return await login(username, password)
-    } catch (err) {
-      throw err
+      const userData = await register(name, email, phone, password)
+      setShowTour(true)
+      return userData
+    } catch (err) { throw err }
+  }
+
+  const handleTourFinish = async (prefs) => {
+    setShowTour(false)
+    if (token) {
+      try { await updatePreferences(token, prefs) } catch {}
     }
   }
 
@@ -168,7 +212,7 @@ export function App() {
       <div data-theme={theme} className="flex min-h-[100dvh] items-center justify-center bg-[color:var(--bg)] text-[color:var(--ink-soft)]">
         <div className="flex items-center gap-3">
           <span className="h-5 w-5 rounded-full border-2 border-[color:var(--accent)] border-t-transparent animate-spin" />
-          <span className="text-sm">A carregar sessão...</span>
+          <span className="text-sm">A carregar sessao...</span>
         </div>
       </div>
     )
@@ -178,7 +222,11 @@ export function App() {
     return (
       <>
         <Toast visible={!!toast?.message} message={toast?.message} />
-        <LoginScreen onLogin={handleLogin} loading={authLoading} theme={theme} />
+        {authScreen === 'register' ? (
+          <RegisterScreen onRegister={handleRegister} onSwitchToLogin={() => setAuthScreen('login')} loading={authLoading} theme={theme} />
+        ) : (
+          <LoginScreen onLogin={handleLogin} onSwitchToRegister={() => setAuthScreen('register')} loading={authLoading} theme={theme} />
+        )}
       </>
     )
   }
@@ -186,6 +234,7 @@ export function App() {
   return (
     <>
       <Toast visible={!!toast?.message} message={toast?.message} />
+      {showTour ? <OnboardingTour userName={user?.name || ''} onFinish={handleTourFinish} /> : null}
       <AppShell
         healthOk={healthOk}
         theme={theme}

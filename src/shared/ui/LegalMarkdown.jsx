@@ -1,28 +1,23 @@
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { Gavel } from 'lucide-react'
 
 const CITE_MARKER = '\u241F'
 
 function normalizeBrackets(text) {
   if (!text) return ''
   return text
-    // Double brackets
-    .replace(/\[\[(.*?)\]\]/g, (_, inner) => `${CITE_MARKER}${inner}${CITE_MARKER}`)
+    // Double brackets — now also match juris citations
+    .replace(/\[\[(?!Art)(.{3,200}?)\]\]/g, (_, inner) => `${CITE_MARKER}${inner}${CITE_MARKER}`)
+    .replace(/\[\[(Art(?:igo)?\S*\s*\d+\S*\s*[,\s][^\]]{3,200}?)\]\]/g, (_, inner) => `${CITE_MARKER}${inner}${CITE_MARKER}`)
     .replace(/\[\[([^\]\n]{3,200}?)\]/g, (_, inner) => `${CITE_MARKER}${inner}${CITE_MARKER}`)
-    .replace(/\[\[(?=Art)/g, '[')
-    // Single brackets
-    .replace(/\[(Art(?:\S+)?\s*\d+\S*\s*[,\s][^\]]{3,180}?)\]/g, (_, inner) => {
-      if (/^Art/i.test(inner.trim())) return `${CITE_MARKER}${inner}${CITE_MARKER}`
-      return `[${inner}]`
-    })
-    // Pull bare "Art." references that start on a new line up to the previous sentence
-    .replace(/\n+\s*(Art\.?\s*)/gi, ' $1')
-    // Bare Art. N references (no brackets — full citation with diploma or just article number)
-    .replace(/(?:^|(?<=[\s(]))(Art(?:igo)?\.?\s*(?:n\.?[º°]?\s*)?\d+(?:\s*(?:[,;]\s*[^.]{4,80}?)?(?:\s*[,;]\s*p\.?\s*\d+)?)?)/gi, (match) => {
-      const trimmed = match.trim()
-      if (trimmed.length < 5) return match
-      return `${CITE_MARKER}${trimmed}${CITE_MARKER}`
-    })
+    // Jurisprudence bracketless citations
+    .replace(/(?:^|(?<=[\s(]))(Processo\s+n\.?[º°]?\s*\d+\/\d{2,4})/gi, (match) => `${CITE_MARKER}${match.trim()}${CITE_MARKER}`)
+    .replace(/(?:^|(?<=[\s(]))(Ac(?:órdão|orda[oã])?\s*(?:do\s+)?Tribunal\s+\S+(?:[\s,][^.]{10,100}?)?)/gi, (match) => `${CITE_MARKER}${match.trim()}${CITE_MARKER}`)
+    // Single brackets — Art citations
+    .replace(/\[(Art(?:\S+)?\s*\d+\S*\s*[,\s][^\]]{3,180}?)\]/g, (_, inner) => `${CITE_MARKER}${inner}${CITE_MARKER}`)
+    // Bare Art. N references
+    .replace(/(?:^|(?<=[\s(]))(Art(?:igo)?\.?\s*(?:n\.?[º°]?\s*)?\d+(?:\s*(?:[,;]\s*[^.]{4,80}?)?(?:\s*[,;]\s*p\.?\s*\d+)?)?)/gi, (match) => `${CITE_MARKER}${match.trim()}${CITE_MARKER}`)
     .replace(/\(\(/g, '(')
     .replace(/\)\)/g, ')')
     .replace(/^\s*[.•·]+\s*$/gm, '')
@@ -31,12 +26,19 @@ function normalizeBrackets(text) {
 }
 
 function parseCitation(text) {
-  const cleaned = text.trim().replace(/^Art(?:igo|s|\.)?\.?\s*(?:n\.?[º°]?\s*)?/i, '')
-  if (!cleaned) return null
-  const am = cleaned.match(/^(\d+(?:\.?[º°ª]\d*)?)/)
+  const cleaned = text.trim()
+  // Jurisprudence citations
+  const jurisMatch = cleaned.match(/^(Ac(?:órdão|orda[oã])|Processo|Proc\.?)\s*(.*)$/i)
+  if (jurisMatch) {
+    return { juris: true, text: cleaned }
+  }
+  // Legislation: Art. X, Diploma, p. Y
+  const artStripped = cleaned.replace(/^Art(?:igo|s|\.)?\.?\s*(?:n\.?[º°]?\s*)?/i, '')
+  if (!artStripped) return null
+  const am = artStripped.match(/^(\d+(?:\.?[º°ª]\d*)?)/)
   if (!am) return null
   const article = am[1]
-  const rest = cleaned.slice(am[0].length).replace(/^[\s,;.]+/, '')
+  const rest = artStripped.slice(am[0].length).replace(/^[\s,;.]+/, '')
   const pm = rest.match(/[,;]?\s*p(?:\s*[aá]g)?\.?\s*(\d+)\s*$/)
   let page = null
   let diploma = rest
@@ -52,6 +54,17 @@ function parseCitation(text) {
 
 function CitationReference({ text, sourceRefs, onSelectRef }) {
   const citation = parseCitation(text)
+  if (!citation) {
+    return <span className="font-semibold text-[var(--color-accent)]">{text}</span>
+  }
+  if (citation.juris) {
+    return (
+      <span className="inline-flex items-center gap-1 rounded bg-[color:var(--gold)]/10 px-1.5 py-0.5 text-xs font-medium text-[color:var(--gold)] cursor-default" title={citation.text}>
+        <Gavel size={11} />
+        {citation.text.length > 60 ? citation.text.slice(0, 58) + '...' : citation.text}
+      </span>
+    )
+  }
   if (!citation?.article) {
     return <span className="font-semibold text-[var(--color-accent)]">{text}</span>
   }

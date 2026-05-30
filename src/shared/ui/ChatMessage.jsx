@@ -1,4 +1,4 @@
-import { BookOpenCheck, ChevronDown, ExternalLink, Scale, User } from 'lucide-react'
+import { BookOpenCheck, ChevronDown, ExternalLink, Gavel, Scale, User } from 'lucide-react'
 import { useState } from 'react'
 import { cleanAnswerBody } from '../utils/markdown'
 import { ClarifyingQuestions } from './ClarifyingQuestions'
@@ -141,18 +141,22 @@ export function ChatMessage({ role, content, meta, sourceRefs = [], answerMode =
 
                 {sourcesOpen ? (
                   <ul className="mt-2 space-y-0.5">
-                    {sourceRefs.map((source, i) => (
+                    {sourceRefs.map((source, i) => {
+                      const isJuris = source.source_kind === 'jurisprudence'
+                      return (
                       <li key={`${source.source}-${source.page}-${i}`}>
                         <button
                           type="button"
                           onClick={() => onSelectRef?.(source)}
                           className="w-full rounded-lg px-2.5 py-1.5 text-left text-[12px] text-white/55 transition-colors hover:bg-white/[0.04] hover:text-white/75"
                         >
-                          <span className="font-medium">{source.article_number ? `Art. ${source.article_number}` : source.title}</span>
-                          <span className="ml-1.5 text-white/25 tabular-nums">· pág. {source.page || 'N/D'}</span>
+                          <span className="font-medium">{source.article_number ? `Art. ${source.article_number}` : source.title?.slice(0, 50)}</span>
+                          <span className="ml-1.5 text-white/25 tabular-nums">· pag. {source.page || 'N/D'}</span>
+                          {isJuris ? <span className="ml-1.5 inline-flex items-center gap-0.5 text-[color:var(--gold)]"><Gavel size={10} /> Jurisprudencia</span> : null}
                         </button>
                       </li>
-                    ))}
+                      )
+                    })}
                   </ul>
                 ) : null}
               </div>

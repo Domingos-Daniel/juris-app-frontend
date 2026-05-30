@@ -3,11 +3,51 @@ import { ArrowDown } from 'lucide-react'
 import { ErrorBanner } from '../../shared/ui/ErrorBanner'
 import { StreamingLoader } from '../../shared/ui/StreamingLoader'
 import { EmptyState } from '../../shared/ui/EmptyState'
+import { useVoice } from '../../shared/hooks/useVoice'
 import { ChatMessage } from '../../shared/ui/ChatMessage'
 import { ChatComposer } from '../../shared/ui/ChatComposer'
 import { InfoTooltip } from '../../shared/ui/InfoTooltip'
 import { formatNow } from '../../shared/utils/format'
 import { sendChatQuestionStream, uploadPdfDocument, preflightChatQuestion } from '../../shared/services/apiClient'
+import { API_BASE_URL } from '../../shared/constants/app'
+
+let _ttsAudio = null
+function stopTTS() { try { if (_ttsAudio) { _ttsAudio.pause(); _ttsAudio = null } } catch {} }
+
+function cleanForTTS(text) {
+  if (!text) return ''
+  return text
+    .replace(/```[\s\S]*?```/g, ' ')           // code blocks
+    .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')   // links -> text
+    .replace(/\*\*([^*]+)\*\*/g, '$1')          // bold
+    .replace(/\*([^*]+)\*/g, '$1')              // italic
+    .replace(/^#{1,6}\s*/gm, '')                // headers
+    .replace(/^[*-]\s+/gm, '')                  // bullet lists
+    .replace(/^[0-9]+\.\s+/gm, '')              // numbered lists
+    .replace(/\n{3,}/g, '. ')                   // multiple newlines
+    .replace(/\n/g, '. ')                       // single newlines
+    .replace(/\s{2,}/g, ' ')                    // extra spaces
+    .replace(/^[.;,]\s*/g, '')                  // leading punctuation
+    .trim()
+}
+
+async function speakTTS(text, token) {
+  stopTTS()
+  if (!text || !token) return
+  try {
+    const resp = await fetch(`${API_BASE_URL}/api/tts/speak`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'text/plain' },
+      body: text.slice(0, 800),
+    })
+    if (!resp.ok) return
+    const blob = await resp.blob()
+    const url = URL.createObjectURL(blob)
+    _ttsAudio = new Audio(url)
+    _ttsAudio.play()
+    _ttsAudio.onended = () => { _ttsAudio = null }
+  } catch (e) { _ttsAudio = null }
+}
 
 const MAX_PDF_BYTES = 1024 * 1024
 
@@ -36,6 +76,20 @@ export function ChatWorkspace({
   const [streamingPhase, setStreamingPhase] = useState('idle')
   const [conversationLoading, setConversationLoading] = useState(false)
   const prevConversationIdRef = useRef(null)
+  const questionRef = useRef('')
+  const voiceModeRef = useRef(false)
+  const voiceSubmittedRef = useRef(false)
+
+  // Voice hook
+  const {
+    voiceState: voiceHookState,
+    interimText,
+    analyserNode,
+    startListening,
+    stopListening,
+    cancelListening,
+    getTranscript,
+  } = useVoice(authToken)
   const loadingStartedAtRef = useRef(0)
   const scrollContainerRef = useRef(null)
   const shouldAutoScrollRef = useRef(true)
@@ -158,8 +212,8 @@ export function ChatWorkspace({
   }
 
   const handleSubmit = async (event) => {
-    event.preventDefault()
-    const normalized = question.trim()
+    if (event) event.preventDefault()
+    const normalized = (questionRef.current || question).trim()
     if ((normalized.length < 5 && !pendingAttachment) || loading) return
 
     setQuestion('')  // Clear immediately for UX
@@ -271,6 +325,10 @@ export function ChatWorkspace({
           verified_articles: finalMeta.verified_articles || [],
           classification: finalMeta.classification || null,
         })
+        if (voiceModeRef.current && cleanAnswer) {
+          voiceModeRef.current = false
+          speakTTS(cleanForTTS(cleanAnswer), authToken)
+        }
       } else if (accumulated) {
         onAppendMessagePair({
           chat_id: selectedConversation?.id || '',
@@ -307,7 +365,26 @@ export function ChatWorkspace({
   }
 
   const handleVoiceToggle = () => {
-    setVoiceState((prev) => (prev === 'recording' ? 'idle' : 'recording'))
+    if (voiceHookState === 'idle') {
+      voiceSubmittedRef.current = false
+      startListening({
+        onTranscript: (text) => {
+          if (voiceSubmittedRef.current) return
+          voiceSubmittedRef.current = true
+          const processed = text.trim()
+          if (!processed) return
+          setQuestion(processed)
+          questionRef.current = processed
+          voiceModeRef.current = true
+          handleSubmit(null)
+        },
+        onError: (msg) => setError(msg),
+      })
+    } else if (voiceHookState === 'listening') {
+      stopListening()
+    } else {
+      cancelListening()
+    }
   }
 
   const handlePdfSelection = async (event) => {
@@ -397,11 +474,12 @@ export function ChatWorkspace({
       <div className="shrink-0 px-2 pb-2 pt-2 sm:px-2">
         <div className="mx-auto max-w-3xl">
           <ChatComposer
-            value={question}
+            value={voiceHookState === 'listening' && interimText ? interimText : question}
             onChange={setQuestion}
             onSubmit={handleSubmit}
             loading={loading}
-            voiceState={voiceState}
+            voiceState={voiceHookState}
+            voiceAnalyserNode={analyserNode}
             onVoiceToggle={handleVoiceToggle}
             onOpenPdfPicker={() => fileInputRef.current?.click()}
             activeDocument={activeDocument}

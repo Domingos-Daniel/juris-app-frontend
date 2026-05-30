@@ -1,5 +1,6 @@
 import { Mic, Paperclip, SendHorizontal, X } from 'lucide-react'
 import { classNames } from '../utils/format'
+import { VoiceVisualizer } from './VoiceVisualizer'
 
 export function ChatComposer({
   value,
@@ -13,8 +14,10 @@ export function ChatComposer({
   pendingAttachment,
   onClearActiveDocument,
   onClearPendingAttachment,
+  voiceAnalyserNode,
 }) {
-  const isRecording = voiceState === 'recording'
+  const isRecording = voiceState === 'recording' || voiceState === 'listening' || voiceState === 'connecting'
+  const isProcessing = voiceState === 'processing'
 
   return (
     <form className="w-full rounded-[var(--radius-xl)] border border-[color:var(--stroke)] bg-[color:var(--panel)] shadow-[var(--shadow-2)]" onSubmit={onSubmit}>
@@ -88,6 +91,8 @@ export function ChatComposer({
           <SendHorizontal size={18} />
         </button>
       </div>
+
+      <VoiceVisualizer isActive={isRecording} analyserNode={voiceAnalyserNode?.current} />
     </form>
   )
 }
